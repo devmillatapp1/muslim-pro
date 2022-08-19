@@ -1,18 +1,22 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hisnelmoslem/controllers/dashboard_controller.dart';
-import 'package:hisnelmoslem/utils/alarm_database_helper.dart';
-import 'package:hisnelmoslem/utils/fake_hadith_database_helper.dart';
-import 'package:hisnelmoslem/views/dashboard/dashboard.dart';
-import 'package:hisnelmoslem/views/onboarding/onboarding.dart';
+import 'package:muslim/app/data/app_data.dart';
+import 'package:muslim/core/utils/alarm_database_helper.dart';
+import 'package:muslim/core/utils/alarm_manager.dart';
+import 'package:muslim/core/utils/awesome_notification_manager.dart';
+import 'package:muslim/core/utils/fake_hadith_database_helper.dart';
+import 'package:muslim/core/utils/migration/migration.dart';
+import 'package:muslim/core/utils/notification_manager.dart';
+import 'package:muslim/app/views/dashboard/dashboard.dart';
+import 'package:muslim/app/modules/onboarding/onboarding.dart';
 import 'package:intl/intl.dart';
-import 'themes/theme_services.dart';
-import 'utils/azkar_database_helper.dart';
-import 'utils/notification_manager.dart';
-import 'utils/tally_database_helper.dart';
+
+import 'core/themes/theme_services.dart';
+import 'core/utils/azkar_database_helper.dart';
+import 'core/utils/tally_database_helper.dart';
 
 void main() async {
   /// Make sure all stuff are initialized
@@ -21,17 +25,18 @@ void main() async {
   ///
   await GetStorage.init();
 
-  /// Manage Notification feedback
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  final NotificationAppLaunchDetails? notificationAppLaunchDetails =
-      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-  String? payload = notificationAppLaunchDetails!.payload;
-  DashboardController dashboardController = Get.put(DashboardController());
-  dashboardController.payload = payload;
+  /// Start Migration steps
+  await Migration.start();
+
+  /// Init Awesome Notification
+  await awesomeNotificationManager.init();
+
+  /// Disable all notification from local_notification
+  await localNotifyManager.cancelAllNotifications();
 
   /// U Doesn't open app for long time notification
-  await localNotifyManager.appOpenNotification();
+  await awesomeNotificationManager.appOpenNotification();
+  await alarmManager.checkAllAlarmsInDb();
 
   /// Make Phone StatusBar Transparent
   SystemChrome.setSystemUIOverlayStyle(
@@ -55,11 +60,18 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    awesomeNotificationManager.listen();
+  }
+
   @override
   void dispose() async {
     //Close databases
@@ -67,23 +79,27 @@ class _MyAppState extends State<MyApp> {
     await fakeHadithDatabaseHelper.close();
     await alarmDatabaseHelper.close();
     await tallyDatabaseHelper.close();
+    awesomeNotificationManager.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO to be deleted in next update
-    final box = GetStorage();
-    final openOnBoard = box.read('is_v1.9_first_open') ?? true;
     return GetMaterialApp(
       locale: const Locale('ar'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       debugShowCheckedModeBanner: false,
-      title: 'اذكار المسلم',
+      title: 'المسلم برو',
       theme: ThemeServices.getTheme(),
       // theme: Themes.yellowTheme,
       // home: const AzkarDashboard(),
-      // TODO to be deleted in next update
-      home: openOnBoard ? const OnBoardingPage() : const AzkarDashboard(),
+      home: appData.isFirstOpenToThisRelease
+          ? const OnBoardingPage()
+          : const AzkarDashboard(),
     );
   }
 }

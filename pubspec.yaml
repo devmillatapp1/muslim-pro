@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: "none"
 
-version: 1.9.0+11
+version: 2.1.0+13
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -21,7 +21,7 @@ dependencies:
   material_design_icons_flutter: ^5.0.6595
   clipboard: ^0.1.3
   shared_preferences: ^2.0.12
-  font_awesome_flutter: ^9.2.0
+  font_awesome_flutter: ^10.1.0
   sleek_circular_slider: ^2.0.1
   share: ^2.0.4
   sqflite: ^2.0.2
@@ -35,16 +35,26 @@ dependencies:
   auto_size_text: ^3.0.0
   screenshot: ^1.2.3
   get_storage: ^2.0.3
-  audioplayers: ^0.20.1
+  audioplayers: ^1.0.1
   enum_to_string: ^2.0.1
   intl: ^0.17.0
   flutter_zoom_drawer: ^3.0.1
   flutter_colorpicker: ^1.0.3
+  vibration: ^1.7.4-nullsafety.0
+  flutter_native_splash: ^2.1.6
+  awesome_notifications: ^0.6.21
+  timelines: ^0.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
+
+flutter_native_splash:
+  android: true
+  ios: true
+  web: true
+  color: "#303030"
 
 flutter:
   uses-material-design: true
@@ -60,15 +70,3 @@ flutter:
     - family: Uthmanic
       fonts:
         - asset: assets/fonts/uthmanic_hafs_ver12.otf
-
-    - family: Noto
-      fonts:
-        - asset: assets/fonts/NotoKufiArabic.ttf
-
-    - family: Amiri
-      fonts:
-        - asset: assets/fonts/Amiri_Bold.ttf
-
-    - family: AmiriBold
-      fonts:
-        - asset: assets/fonts/Amiri_Bold.ttf

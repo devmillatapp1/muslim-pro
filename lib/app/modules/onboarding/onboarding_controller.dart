@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:muslim/app/data/app_data.dart';
-import 'package:muslim/app/shared/functions/open_url.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../shared/transition_animation/transition_animation.dart';
 import '../../shared/widgets/empty.dart';

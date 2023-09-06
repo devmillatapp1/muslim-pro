@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:muslim/app/data/models/fake_haith.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/shared/functions/print.dart';
 import 'package:muslim/core/utils/data_database_helper.dart';
 import 'package:path/path.dart';
@@ -16,17 +16,17 @@ class FakeHadithDatabaseHelper {
   static const String dbName = "fake_hadith.db";
   static const int dbVersion = 1;
 
-  /* ************* Singelton Constractor ************* */
+  /* ************* Singleton Constructor ************* */
 
   static FakeHadithDatabaseHelper? _databaseHelper;
   static Database? _database;
-
-  FakeHadithDatabaseHelper._createInstance();
 
   factory FakeHadithDatabaseHelper() {
     _databaseHelper ??= FakeHadithDatabaseHelper._createInstance();
     return _databaseHelper!;
   }
+
+  FakeHadithDatabaseHelper._createInstance();
 
   Future<Database> get database async {
     _database ??= await _initDatabase();
@@ -48,7 +48,21 @@ class FakeHadithDatabaseHelper {
       await _copyFromAssets(path: path);
     }
 
-    return await openDatabase(
+    Database database = await openDatabase(path);
+
+    await database.getVersion().then((currentVersion) async {
+      if (currentVersion < dbVersion) {
+        database.close();
+
+        //delete the old database so you can copy the new one
+        await deleteDatabase(path);
+
+        // Database isn't exist > Create new Database
+        await _copyFromAssets(path: path);
+      }
+    });
+
+    return database = await openDatabase(
       path,
       version: dbVersion,
       onCreate: _onCreateDatabase,
@@ -58,28 +72,36 @@ class FakeHadithDatabaseHelper {
   }
 
   // On create database
-  _onCreateDatabase(Database db, int version) async {
+  FutureOr<void> _onCreateDatabase(Database db, int version) async {
     //
   }
 
   // On upgrade database version
-  _onUpgradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onUpgradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
   // On downgrade database version
-  _onDowngradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onDowngradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
-  // Copy database from assets to Database Direcorty of app
-  _copyFromAssets({required String path}) async {
+  // Copy database from assets to Database Directory of app
+  FutureOr<void> _copyFromAssets({required String path}) async {
     //
     try {
       await Directory(dirname(path)).create(recursive: true);
 
-      ByteData data = await rootBundle.load(join("assets", "db", dbName));
-      List<int> bytes =
+      final ByteData data = await rootBundle.load(join("assets", "db", dbName));
+      final List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       await File(path).writeAsBytes(bytes, flush: true);
@@ -96,10 +118,10 @@ class FakeHadithDatabaseHelper {
 
     final List<Map<String, dynamic>> maps = await db.query('fakehadith');
 
-    List<DbFakeHaith> fakeHadiths = [];
+    final List<DbFakeHaith> fakeHadiths = [];
 
     for (var i = 0; i < maps.length; i++) {
-      DbFakeHaith fakeHadith = DbFakeHaith.fromMap(maps[i]);
+      final DbFakeHaith fakeHadith = DbFakeHaith.fromMap(maps[i]);
       await dataDatabaseHelper
           .isFakeHadithWereRead(fakeHadithId: fakeHadith.id)
           .then((value) => fakeHadith.isRead = value);
@@ -117,7 +139,7 @@ class FakeHadithDatabaseHelper {
       '''SELECT * FROM fakeHadith  WHERE _id = ?''',
       [fakeHadithId],
     );
-    DbFakeHaith dbFakeHaith = DbFakeHaith.fromMap(maps[0]);
+    final DbFakeHaith dbFakeHaith = DbFakeHaith.fromMap(maps[0]);
     await dataDatabaseHelper
         .isFakeHadithWereRead(fakeHadithId: dbFakeHaith.id)
         .then((value) => dbFakeHaith.isRead = value);
@@ -127,7 +149,7 @@ class FakeHadithDatabaseHelper {
 
   // Get read hadith only
   Future<List<DbFakeHaith>> getReadFakeHadiths() async {
-    List<DbFakeHaith> fakeHadiths = [];
+    final List<DbFakeHaith> fakeHadiths = [];
     await dataDatabaseHelper.getReadFakeHadiths().then((value) async {
       for (var i = 0; i < value.length; i++) {
         await getFakeHadithById(fakeHadithId: value[i].hadithId).then((title) {
@@ -141,7 +163,7 @@ class FakeHadithDatabaseHelper {
 
   // Get unread hadith only
   Future<List<DbFakeHaith>> getUnreadFakeHadiths() async {
-    List<DbFakeHaith> fakeHadiths = [];
+    final List<DbFakeHaith> fakeHadiths = [];
     await dataDatabaseHelper.getUnreadFakeHadiths().then((value) async {
       for (var i = 0; i < value.length; i++) {
         await getFakeHadithById(fakeHadithId: value[i].hadithId).then((title) {
@@ -159,8 +181,9 @@ class FakeHadithDatabaseHelper {
   }
 
   // Mark hadith as unread
-  Future<void> markFakeHadithAsUnRead(
-      {required DbFakeHaith dbFakeHaith}) async {
+  Future<void> markFakeHadithAsUnRead({
+    required DbFakeHaith dbFakeHaith,
+  }) async {
     await dataDatabaseHelper.markFakeHadithAsUnRead(dbFakeHaith: dbFakeHaith);
   }
 

@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:muslim/app/data/app_data.dart';
-
-import '../../shared/transition_animation/transition_animation.dart';
-import '../../shared/widgets/empty.dart';
-import '../../views/dashboard/dashboard.dart';
+import 'package:muslim/app/shared/functions/open_url.dart';
+import 'package:muslim/app/shared/transition_animation/transition_animation.dart';
+import 'package:muslim/app/shared/widgets/empty.dart';
+import 'package:muslim/app/views/dashboard/dashboard.dart';
+import 'package:muslim/core/values/constant.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class OnBoardingController extends GetxController {
   /* *************** Variables *************** */
   //
-  PageController pageController = PageController(initialPage: 0);
+  PageController pageController = PageController();
 
   //
   bool get isFinalPage => currentPageIndex + 1 == pageList.length;
 
   // show skip button
-  bool get showSkipBtn => false;
+  bool get showSkipBtn => true;
 
   //
   int currentPageIndex = 0;
@@ -27,73 +29,30 @@ class OnBoardingController extends GetxController {
   //
   final pageList = [
     const Empty(
-      title: "المسلم برو الإصدار 2.1.0",
+      title: "المسلم برو الإصدار $appVersion",
       description: '''
-أهلا بك أيها الموفق في هذا الإصدار الجديد من تطبيق المسلم برو 
-قم بتقليب الصفحات
+السلام عليكم أيها الموفق 
+أهلا بك في تحديث جديد من المسلم برو
+قم بسحب الشاشة لتقليب الصفحات
 أو استخدم مفاتيح الصوت لرؤية الميزات الجديدة 
 ''',
     ),
     const Empty(
       isImage: false,
-      icon: Icons.imagesearch_roller_sharp,
-      title: "إمكانية ترتيب النوافذ على الواجهة",
-      description: """
-يمكنك الآن ترتيب الصفحات على الشاشة الرئيسية كما تحب
-قم بالذهاب للإعدادات ثم اختر ترتيب الشاشة
-ثم اضغط على الشاشة ضغطة مطولة ثم قم بالسحب
-""",
+      icon: MdiIcons.spellcheck,
+      title: "إصلاح الأخطاء الإملائية التي وصلتنا",
     ),
     const Empty(
       isImage: false,
-      icon: Icons.nightlight,
-      title: "إضافة ذكر أستغفر الله وأتوب إليه في أذكار المساء",
-      description: """
-بعد مراجعة التقييمات التي وصلتنا على البريد تبين عدم وجود ذكر في أذكار المساء لذا قمنا بإضافته
-""",
-    ),
-    const Empty(
-      isImage: false,
-      icon: Icons.restart_alt,
-      title: "إمكانية إعادة تعيين العداد في بطاقات الذكر المفضل",
-      description: "",
-    ),
-    const Empty(
-      isImage: false,
-      icon: Icons.notifications,
-      title: "إعادة كتابة الإشعارات",
-      description: "",
-    ),
-    const Empty(
-      isImage: false,
-      icon: Icons.star_border_purple500_rounded,
-      title: "تحسينات في واجهة التطبيق",
-      description: """
-- تحسين صفحة تاريخ الميزات
-- تحسين في القائمة الجانبية في الشاشة الرئيسية
-- تحسين في شكل حالة التنبيهات على الواجهة
-- تحسين في شكل إضافة وتعديل التنبيهات
-- تحسين في بطاقات التنبيهات في إدارة التنبيهات
-""",
-    ),
-    const Empty(
-      isImage: false,
-      icon: Icons.bug_report_outlined,
-      title: "حل المشاكل التي وصلتنا",
-      description: """
-- حفظ ثيم التطبيق عند أول مرة لفتحة وجعل الوضع المعتم هو الوضع الإفتراضي للتطبيق
-- حل مشكلة عدم تحديث معاينة الخط في الإعدادات
-- حل مشكلة اللون الأبيض عند فتح البرنامج
-- حل مشكلة ظهور التنبيهات بعد حذفها
-- حل مشكلة تكرار شاشة البداية
-""",
+      icon: MdiIcons.book,
+      title: "إضافة أواخر سورة آل عمران",
     ),
   ];
 
   /* *************** Controller life cycle *************** */
   //
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     super.onInit();
     //
     _volumeBtnChannel.setMethodCallHandler((call) {
@@ -112,7 +71,7 @@ class OnBoardingController extends GetxController {
         }
       }
 
-      return Future.value(null);
+      return Future.value();
     });
   }
 
@@ -130,9 +89,11 @@ class OnBoardingController extends GetxController {
 
   /// Go to dashboard
   /// and set app fisrt open to false
-  goToDashboard() {
-    appData.changIsFirstOpenToThisRelease(false);
+  void goToDashboard() {
+    appData.changIsFirstOpenToThisRelease(value: false);
     transitionAnimation.circleRevalPushReplacement(
-        context: Get.context!, goToPage: const AzkarDashboard());
+      context: Get.context!,
+      goToPage: const AzkarDashboard(),
+    );
   }
 }

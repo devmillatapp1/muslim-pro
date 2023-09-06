@@ -1,22 +1,26 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:muslim/app/data/awesome_day.dart';
 import 'package:muslim/app/data/models/alarm.dart';
+import 'package:muslim/app/shared/functions/get_snackbar.dart';
 import 'package:muslim/app/shared/functions/print.dart';
 import 'package:muslim/core/utils/alarm_database_helper.dart';
 import 'package:muslim/core/utils/awesome_notification_manager.dart';
 
-import '../../app/shared/functions/get_snackbar.dart';
-
 AlarmManager alarmManager = AlarmManager();
 
 class AlarmManager {
-  alarmState({required DbAlarm dbAlarm, bool showMsg = true}) async {
+  Future<void> alarmState({
+    required DbAlarm dbAlarm,
+    bool showMsg = true,
+  }) async {
     if (dbAlarm.isActive) {
-      // Get.snackbar("رسالة", "تم تفعيل منبه ${dbAlarm.title}",
+      // Get.snackbar("رسالة", "تفعيل منبه ${dbAlarm.title}",
       //     duration: const Duration(seconds: 1),
       //     icon: Image.asset("assets/images/app_icon.png"));
       if (showMsg) {
-        getSnackbar(message: "تم تفعيل منبه ${dbAlarm.title}");
+        getSnackbar(message: "${"activate".tr} | ${dbAlarm.title}");
       }
       switch (dbAlarm.repeatType) {
         case "Daily":
@@ -24,87 +28,82 @@ class AlarmManager {
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(dbAlarm.hour, dbAlarm.minute),
             payload: (dbAlarm.titleId).toString(),
           );
-          break;
         case "AtSaturday":
           await awesomeNotificationManager.addCustomWeeklyReminder(
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(dbAlarm.hour, dbAlarm.minute),
             payload: (dbAlarm.titleId).toString(),
-            day: Day.saturday,
+            weekday: AwesomeDay.saturday.value,
           );
-          break;
         case "AtSunday":
           await awesomeNotificationManager.addCustomWeeklyReminder(
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(dbAlarm.hour, dbAlarm.minute),
             payload: (dbAlarm.titleId).toString(),
-            day: Day.sunday,
+            weekday: AwesomeDay.sunday.value,
           );
-          break;
         case "AtMonday":
           await awesomeNotificationManager.addCustomWeeklyReminder(
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(
+              dbAlarm.hour,
+              dbAlarm.minute,
+            ),
             payload: (dbAlarm.titleId).toString(),
-            day: Day.monday,
+            weekday: AwesomeDay.monday.value,
           );
-          break;
         case "AtTuesday":
           await awesomeNotificationManager.addCustomWeeklyReminder(
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(dbAlarm.hour, dbAlarm.minute),
             payload: (dbAlarm.titleId).toString(),
-            day: Day.tuesday,
+            weekday: AwesomeDay.tuesday.value,
           );
-          break;
         case "AtWednesday":
           await awesomeNotificationManager.addCustomWeeklyReminder(
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(dbAlarm.hour, dbAlarm.minute),
             payload: (dbAlarm.titleId).toString(),
-            day: Day.wednesday,
+            weekday: AwesomeDay.wednesday.value,
           );
-          break;
         case "AtThursday":
           await awesomeNotificationManager.addCustomWeeklyReminder(
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(dbAlarm.hour, dbAlarm.minute),
             payload: (dbAlarm.titleId).toString(),
-            day: Day.thursday,
+            weekday: AwesomeDay.thursday.value,
           );
-          break;
         case "AtFriday":
           await awesomeNotificationManager.addCustomWeeklyReminder(
             id: dbAlarm.titleId,
             title: dbAlarm.title,
             body: dbAlarm.body,
-            time: Time(dbAlarm.hour, dbAlarm.minute, 0),
+            time: Time(dbAlarm.hour, dbAlarm.minute),
             payload: (dbAlarm.titleId).toString(),
-            day: Day.friday,
+            weekday: AwesomeDay.friday.value,
           );
-          break;
       }
     } else if (!dbAlarm.isActive) {
-      // Get.snackbar("رسالة", "تم الغاء منبه ${dbAlarm.title}",
+      // Get.snackbar("رسالة", "الغاء تفعيل منبه ${dbAlarm.title}",
       //     duration: const Duration(seconds: 1),
       //     icon: Image.asset("assets/images/app_icon.png"));
       if (showMsg) {
-        getSnackbar(message: "تم الغاء منبه ${dbAlarm.title}");
+        getSnackbar(message: "${"deactivate".tr} | ${dbAlarm.title}");
       }
 
       awesomeNotificationManager.cancelNotificationById(id: dbAlarm.titleId);
@@ -113,13 +112,13 @@ class AlarmManager {
 
   Future<void> checkAllAlarmsInDb() async {
     final box = GetStorage();
-    bool isAwesomeSet = box.read<bool>('is_awesome_set') ?? false;
+    final bool isAwesomeSet = box.read<bool>('is_awesome_set') ?? false;
     if (!isAwesomeSet) {
       hisnPrint("Setup Awesome from database ....");
       await alarmDatabaseHelper.getAlarms().then((value) {
-        List<DbAlarm> alarms = value;
+        final List<DbAlarm> alarms = value;
         for (var i = 0; i < alarms.length; i++) {
-          DbAlarm alarm = alarms[i];
+          final DbAlarm alarm = alarms[i];
           alarmState(dbAlarm: alarm, showMsg: false);
         }
       });

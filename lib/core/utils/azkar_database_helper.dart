@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:muslim/app/data/models/zikr_chapters.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/shared/functions/print.dart';
 import 'package:muslim/core/utils/data_database_helper.dart';
 import 'package:path/path.dart';
@@ -16,19 +14,19 @@ class AzkarDatabaseHelper {
   /* ************* Variables ************* */
 
   static const String dbName = "hisn_elmoslem.db";
-  static const int dbVersion = 1;
+  static const int dbVersion = 3;
 
-  /* ************* Singelton Constractor ************* */
+  /* ************* Singleton Constructor ************* */
 
   static AzkarDatabaseHelper? _databaseHelper;
   static Database? _database;
-
-  AzkarDatabaseHelper._createInstance();
 
   factory AzkarDatabaseHelper() {
     _databaseHelper ??= AzkarDatabaseHelper._createInstance();
     return _databaseHelper!;
   }
+
+  AzkarDatabaseHelper._createInstance();
 
   Future<Database> get database async {
     _database ??= await _initDatabase();
@@ -50,7 +48,21 @@ class AzkarDatabaseHelper {
       await _copyFromAssets(path: path);
     }
 
-    return await openDatabase(
+    Database database = await openDatabase(path);
+
+    await database.getVersion().then((currentVersion) async {
+      if (currentVersion < dbVersion) {
+        database.close();
+
+        //delete the old database so you can copy the new one
+        await deleteDatabase(path);
+
+        // Database isn't exist > Create new Database
+        await _copyFromAssets(path: path);
+      }
+    });
+
+    return database = await openDatabase(
       path,
       version: dbVersion,
       onCreate: _onCreateDatabase,
@@ -60,28 +72,36 @@ class AzkarDatabaseHelper {
   }
 
   /// On create database
-  _onCreateDatabase(Database db, int version) async {
+  FutureOr<void> _onCreateDatabase(Database db, int version) async {
     //
   }
 
   /// On upgrade database version
-  _onUpgradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onUpgradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
   /// On downgrade database version
-  _onDowngradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onDowngradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
-  /// Copy database from assets to Database Direcorty of app
-  _copyFromAssets({required String path}) async {
+  /// Copy database from assets to Database Directory of app
+  FutureOr<void> _copyFromAssets({required String path}) async {
     //
     try {
       await Directory(dirname(path)).create(recursive: true);
 
-      ByteData data = await rootBundle.load(join("assets", "db", dbName));
-      List<int> bytes =
+      final ByteData data = await rootBundle.load(join("assets", "db", dbName));
+      final List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       await File(path).writeAsBytes(bytes, flush: true);
@@ -119,10 +139,10 @@ class AzkarDatabaseHelper {
       '''SELECT * FROM titles''',
     );
 
-    List<DbTitle> titles = [];
+    final List<DbTitle> titles = [];
 
     for (int i = 0; i < maps.length; i++) {
-      DbTitle dbTitle = DbTitle.fromMap(maps[i]);
+      final DbTitle dbTitle = DbTitle.fromMap(maps[i]);
       await dataDatabaseHelper
           .isTitleInFavourites(titleId: dbTitle.id)
           .then((value) {
@@ -137,7 +157,7 @@ class AzkarDatabaseHelper {
 
   /// Get all favourite titles
   Future<List<DbTitle>> getAllFavoriteTitles() async {
-    List<DbTitle> titles = [];
+    final List<DbTitle> titles = [];
     await dataDatabaseHelper.getAllFavoriteTitles().then((value) async {
       for (var i = 0; i < value.length; i++) {
         await getTitleById(id: value[i].titleId).then((title) {
@@ -157,7 +177,7 @@ class AzkarDatabaseHelper {
       '''SELECT * FROM titles  WHERE order_id = ?''',
       [id],
     );
-    DbTitle dbTitle = DbTitle.fromMap(maps[0]);
+    final DbTitle dbTitle = DbTitle.fromMap(maps[0]);
     await dataDatabaseHelper
         .isTitleInFavourites(titleId: dbTitle.id)
         .then((value) => dbTitle.favourite = value);
@@ -187,10 +207,10 @@ class AzkarDatabaseHelper {
       '''SELECT * FROM contents''',
     );
 
-    List<DbContent> contents = [];
+    final List<DbContent> contents = [];
 
     for (var i = 0; i < maps.length; i++) {
-      DbContent dbContent = DbContent.fromMap(maps[i]);
+      final DbContent dbContent = DbContent.fromMap(maps[i]);
       await dataDatabaseHelper
           .isContentInFavourites(contentId: dbContent.id)
           .then((value) => dbContent.favourite = value);
@@ -209,10 +229,10 @@ class AzkarDatabaseHelper {
       [titleId],
     );
 
-    List<DbContent> contents = [];
+    final List<DbContent> contents = [];
 
     for (var i = 0; i < maps.length; i++) {
-      DbContent dbContent = DbContent.fromMap(maps[i]);
+      final DbContent dbContent = DbContent.fromMap(maps[i]);
       await dataDatabaseHelper
           .isContentInFavourites(contentId: dbContent.id)
           .then((value) => dbContent.favourite = value);
@@ -231,7 +251,7 @@ class AzkarDatabaseHelper {
       '''SELECT * FROM contents  WHERE _id = ?''',
       [contentId],
     );
-    DbContent dbContent = DbContent.fromMap(maps[0]);
+    final DbContent dbContent = DbContent.fromMap(maps[0]);
     await dataDatabaseHelper
         .isContentInFavourites(contentId: dbContent.id)
         .then((value) => dbContent.favourite = value);
@@ -241,7 +261,7 @@ class AzkarDatabaseHelper {
 
   /// Get favourite content
   Future<List<DbContent>> getFavouriteContents() async {
-    List<DbContent> contents = [];
+    final List<DbContent> contents = [];
     await dataDatabaseHelper.getFavouriteContents().then((value) async {
       for (var i = 0; i < value.length; i++) {
         await getContentsByContentId(contentId: value[i].contentId)
@@ -253,15 +273,35 @@ class AzkarDatabaseHelper {
   }
 
   /// Add content to favourite
-  addContentToFavourite({required DbContent dbContent}) async {
+  Future<void> addContentToFavourite({required DbContent dbContent}) async {
     await dataDatabaseHelper.addContentToFavourite(dbContent: dbContent);
   }
 
   /// Remove Content from favourite
-  removeContentFromFavourite({required DbContent dbContent}) async {
+  Future<void> removeContentFromFavourite({
+    required DbContent dbContent,
+  }) async {
     await dataDatabaseHelper.removeContentFromFavourite(dbContent: dbContent);
   }
 
+  // ************************************************
+  // Commentary
+
+  /// Get Commentary by contentId
+  Future<Commentary> getCommentaryByContentId({
+    required int? contentId,
+  }) async {
+    final Database db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''SELECT * FROM commentary  WHERE content_id = ?''',
+      [contentId],
+    );
+    final Commentary commentary = Commentary.fromMap(maps[0]);
+    return commentary;
+  }
+
+  /// Close database
   Future close() async {
     final db = await database;
     db.close();

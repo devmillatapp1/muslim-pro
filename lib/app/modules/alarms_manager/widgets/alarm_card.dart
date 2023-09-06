@@ -1,150 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/modules/alarms_manager/alarm_controller.dart';
-import 'package:muslim/app/views/dashboard/dashboard_controller.dart';
-import 'package:muslim/app/data/models/alarm.dart';
-import 'package:muslim/core/values/constant.dart';
-import 'package:muslim/app/shared/dialogs/edit_fast_alarm_dialog.dart';
+import 'package:muslim/app/shared/dialogs/alarm_dialog.dart';
+import 'package:muslim/app/shared/functions/get_snackbar.dart';
 import 'package:muslim/app/shared/functions/handle_repeat_type.dart';
 import 'package:muslim/app/shared/widgets/round_tag.dart';
+import 'package:muslim/app/views/dashboard/dashboard_controller.dart';
 import 'package:muslim/core/utils/alarm_database_helper.dart';
 import 'package:muslim/core/utils/alarm_manager.dart';
 import 'package:muslim/core/utils/awesome_notification_manager.dart';
-
-import '../../../shared/functions/get_snackbar.dart';
+import 'package:muslim/core/values/constant.dart';
 
 class AlarmCard extends StatelessWidget {
   final DbAlarm dbAlarm;
 
-  AlarmCard({Key? key, required this.dbAlarm}) : super(key: key);
+  AlarmCard({super.key, required this.dbAlarm});
 
   //
   final DashboardController dashboardController =
       Get.put(DashboardController());
 
   Widget alarmCardBody() {
-    return GetBuilder<AlarmsPageController>(builder: (controller) {
-      return Column(
-        children: [
-          SwitchListTile(
-            title: ListTile(
-              contentPadding: const EdgeInsets.all(0),
-              leading: const Icon(Icons.alarm),
-              subtitle: Wrap(
-                children: [
-                  dbAlarm.body.isEmpty
-                      ? const SizedBox()
-                      : RoundTagCard(
-                          name: dbAlarm.body,
-                          color: brwon,
-                        ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: RoundTagCard(
-                          name: '⌚ ${dbAlarm.hour} : ${dbAlarm.minute}',
-                          color: green,
-                        ),
+    return GetBuilder<AlarmsPageController>(
+      builder: (controller) {
+        return Column(
+          children: [
+            SwitchListTile(
+              title: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.alarm),
+                subtitle: Wrap(
+                  children: [
+                    if (dbAlarm.body.isEmpty)
+                      const SizedBox()
+                    else
+                      RoundTagCard(
+                        name: dbAlarm.body,
+                        color: brwon,
                       ),
-                      Expanded(
-                        child: RoundTagCard(
-                          name: HandleRepeatType()
-                              .getNameToUser(chosenValue: dbAlarm.repeatType),
-                          color: yellow,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RoundTagCard(
+                            name: '⌚ ${dbAlarm.hour} : ${dbAlarm.minute}',
+                            color: green,
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                        Expanded(
+                          child: RoundTagCard(
+                            name: HandleRepeatType()
+                                .getNameToUser(chosenValue: dbAlarm.repeatType),
+                            color: yellow,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                isThreeLine: true,
+                title: Text(dbAlarm.title),
               ),
-              isThreeLine: true,
-              title: Text(dbAlarm.title),
+              activeColor: mainColor,
+              value: dbAlarm.isActive,
+              onChanged: (value) {
+                //Update database
+                final DbAlarm updateAlarm = dbAlarm;
+                updateAlarm.isActive = value;
+                alarmDatabaseHelper.updateAlarmInfo(dbAlarm: updateAlarm);
+                // update view
+                dbAlarm.isActive = value;
+                //
+                alarmManager.alarmState(dbAlarm: updateAlarm);
+                //
+                controller.update();
+                dashboardController.alarms = controller.alarms;
+                dashboardController.update();
+              },
             ),
-            activeColor: mainColor,
-            value: dbAlarm.isActive,
-            onChanged: (value) {
-              //Update database
-              DbAlarm updateAlarm = dbAlarm;
-              updateAlarm.isActive = value;
-              alarmDatabaseHelper.updateAlarmInfo(dbAlarm: updateAlarm);
-              // update view
-              dbAlarm.isActive = value;
-              //
-              alarmManager.alarmState(dbAlarm: updateAlarm);
-              //
-              controller.update();
-              dashboardController.alarms = controller.alarms;
-              dashboardController.update();
-            },
-          ),
-          // Divider(),
-        ],
-      );
-    });
+            // Divider(),
+          ],
+        );
+      },
+    );
   }
 
 //
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<AlarmsPageController>(builder: (controller) {
-      return Slidable(
-        startActionPane: ActionPane(
-          extentRatio: .3,
-          motion: const BehindMotion(),
-          children: [
-            SlidableAction(
-              onPressed: (val) {
-                showFastEditAlarmDialog(
-                  context: context,
-                  dbAlarm: dbAlarm,
-                ).then((value) {
-                  if (value is DbAlarm) {
-                    if (value.hasAlarmInside) {
-                      int index = controller.alarms.indexOf(dbAlarm);
-                      controller.alarms[index] = value;
-                      //
-                      dashboardController.alarms = controller.alarms;
-                      dashboardController.update();
-                      //
-                      controller.update();
+    return GetBuilder<AlarmsPageController>(
+      builder: (controller) {
+        return Slidable(
+          startActionPane: ActionPane(
+            extentRatio: .3,
+            motion: const BehindMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (val) {
+                  showFastAlarmDialog(
+                    context: context,
+                    dbAlarm: dbAlarm,
+                    isToEdit: true,
+                  ).then((value) {
+                    if (value is DbAlarm) {
+                      if (value.hasAlarmInside) {
+                        final int index = controller.alarms.indexOf(dbAlarm);
+                        controller.alarms[index] = value;
+                        //
+                        dashboardController.alarms = controller.alarms;
+                        dashboardController.update();
+                        //
+                        controller.update();
+                      }
                     }
-                  }
-                });
-              },
-              backgroundColor: green,
-              foregroundColor: white,
-              icon: Icons.edit,
-              label: 'تعديل',
-            ),
-          ],
-        ),
-        endActionPane: ActionPane(
-          extentRatio: .3,
-          motion: const BehindMotion(),
-          children: [
-            SlidableAction(
-              onPressed: (val) async {
-                await awesomeNotificationManager.cancelNotificationById(
-                  id: dbAlarm.titleId,
-                );
-                await alarmDatabaseHelper.deleteAlarm(dbAlarm: dbAlarm);
-                controller.alarms.removeWhere((item) => item == dbAlarm);
-                dashboardController.alarms = controller.alarms;
+                  });
+                },
+                backgroundColor: green,
+                foregroundColor: white,
+                icon: Icons.edit,
+                label: 'edit'.tr,
+              ),
+            ],
+          ),
+          endActionPane: ActionPane(
+            extentRatio: .3,
+            motion: const BehindMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (val) async {
+                  await awesomeNotificationManager.cancelNotificationById(
+                    id: dbAlarm.titleId,
+                  );
+                  await alarmDatabaseHelper.deleteAlarm(dbAlarm: dbAlarm);
+                  controller.alarms.removeWhere((item) => item == dbAlarm);
+                  dashboardController.alarms = controller.alarms;
 
-                controller.update();
-                dashboardController.update();
-                getSnackbar(message: "تم حذف منبه ${dbAlarm.title}");
-              },
-              backgroundColor: red,
-              foregroundColor: white,
-              icon: Icons.delete,
-              label: 'حذف',
-            ),
-          ],
-        ),
-        child: alarmCardBody(),
-      );
-    });
+                  controller.update();
+                  dashboardController.update();
+                  getSnackbar(
+                    message: "${"Reminder Removed".tr} | ${dbAlarm.title}",
+                  );
+                },
+                backgroundColor: red,
+                foregroundColor: white,
+                icon: Icons.delete,
+                label: "delete".tr,
+              ),
+            ],
+          ),
+          child: alarmCardBody(),
+        );
+      },
+    );
   }
 }

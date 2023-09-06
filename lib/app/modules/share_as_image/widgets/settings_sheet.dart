@@ -1,17 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:muslim/app/modules/share_as_image/share_as_image_controller.dart';
-import 'package:muslim/core/values/constant.dart';
-import 'package:muslim/app/shared/widgets/scroll_glow_remover.dart';
+import 'dart:ui';
 
-import 'color_swatch_builder.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:muslim/app/data/share_as_image_data.dart';
+import 'package:muslim/app/modules/share_as_image/share_as_image_controller.dart';
+import 'package:muslim/app/modules/share_as_image/widgets/color_swatch_builder.dart';
+import 'package:muslim/core/values/constant.dart';
 
 class SettingsSheet extends StatelessWidget {
   final ShareAsImageController shareAsImageController;
 
   const SettingsSheet({
-    Key? key,
+    super.key,
     required this.shareAsImageController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +26,22 @@ class SettingsSheet extends StatelessWidget {
         return Card(
           margin: EdgeInsets.zero,
           elevation: 20,
-          color: Theme.of(context).bottomAppBarColor.withOpacity(1),
+          clipBehavior: Clip.hardEdge,
+          // color: Theme.of(context).bottomAppBarColor.withOpacity(1),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(20.0),
             ),
           ),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: ScrollGlowRemover(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Get.theme.scaffoldBackgroundColor.withOpacity(0.5),
+              ),
+              padding: const EdgeInsets.all(10),
               child: ListView(
+                physics: const BouncingScrollPhysics(),
                 shrinkWrap: true,
                 controller: scrollController,
                 children: [
@@ -46,95 +54,114 @@ class SettingsSheet extends StatelessWidget {
                     ),
                   ),
                   const Divider(),
-                  const Text(
-                    "لون العنوان",
-                    style: TextStyle(
-                      fontSize: 20,
+                  SizedBox(
+                    height: 70,
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              "title color".tr,
+                            ),
+                            ColorSwatchBuilder(
+                              apply: (color) {
+                                shareAsImageController.updateTitleColor(color);
+                              },
+                              colorSwatchList:
+                                  shareAsImageController.titleColorsList,
+                              colorToTrack: shareAsImageData.titleTextColor,
+                            ),
+                          ],
+                        ),
+                        const VerticalDivider(),
+                        Column(
+                          children: [
+                            Text(
+                              "text color".tr,
+                            ),
+                            ColorSwatchBuilder(
+                              apply: (color) {
+                                shareAsImageController.updateTextColor(color);
+                              },
+                              colorSwatchList:
+                                  shareAsImageController.bodyColorsList,
+                              colorToTrack: shareAsImageData.bodyTextColor,
+                            ),
+                          ],
+                        ),
+                        const VerticalDivider(),
+                        Column(
+                          children: [
+                            Text(
+                              "subtitle color".tr,
+                            ),
+                            ColorSwatchBuilder(
+                              apply: (color) {
+                                shareAsImageController
+                                    .updateAdditionalTextColor(color);
+                              },
+                              colorSwatchList: shareAsImageController
+                                  .additionalTextColorsList,
+                              colorToTrack:
+                                  shareAsImageData.additionalTextColor,
+                            ),
+                          ],
+                        ),
+                        const VerticalDivider(),
+                        Column(
+                          children: [
+                            Text(
+                              "background color".tr,
+                            ),
+                            ColorSwatchBuilder(
+                              apply: (color) {
+                                shareAsImageController
+                                    .updateBackgroundColor(color);
+                              },
+                              colorSwatchList:
+                                  shareAsImageController.backgroundColors,
+                              colorToTrack: shareAsImageData.backgroundColor,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  ColorSwatchBuilder(
-                    apply: (color) {
-                      shareAsImageController.updateTitleColor(color);
-                    },
-                    colorSwatchList: shareAsImageController.titleColorsList,
-                    colorToTrack: shareAsImageController.titleTextColor,
                   ),
                   const Divider(),
-                  const Text(
-                    "لون النص",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  ColorSwatchBuilder(
-                    apply: (color) {
-                      shareAsImageController.updateTextColor(color);
-                    },
-                    colorSwatchList: shareAsImageController.bodyColorsList,
-                    colorToTrack: shareAsImageController.bodyTextColor,
-                  ),
-                  const Divider(),
-                  const Text(
-                    "لون النص الملحق",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  ColorSwatchBuilder(
-                    apply: (color) {
-                      shareAsImageController.updateAdditionalTextColor(color);
-                    },
-                    colorSwatchList:
-                        shareAsImageController.additionalTextColorsList,
-                    colorToTrack: shareAsImageController.additionalTextColor,
-                  ),
-                  const Divider(),
-                  const Text(
-                    "لون الخلفية",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  ColorSwatchBuilder(
-                    apply: (color) {
-                      shareAsImageController.updateBackgroundColor(color);
-                    },
-                    colorSwatchList: shareAsImageController.backgroundColors,
-                    colorToTrack: shareAsImageController.backgroundColor,
-                  ),
-                  const Divider(),
-                  const Text(
-                    "جودة الصورة",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
+                  Text(
+                    "image quality".tr,
                   ),
                   SizedBox(
                     height: 50,
                     child: ListView(
+                      physics: const BouncingScrollPhysics(),
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       children: List.generate(
                         shareAsImageController.imageQulityList.length,
                         (index) => GestureDetector(
-                          onTap: (() {
+                          onTap: () {
                             shareAsImageController.updateImageQuality(
-                                shareAsImageController.imageQulityList[index]);
-                          }),
+                              shareAsImageController.imageQulityList[index],
+                            );
+                          },
                           child: Container(
                             width: 60,
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: Card(
                               color: shareAsImageController
                                           .imageQulityList[index] ==
-                                      shareAsImageController.imageQuality
+                                      shareAsImageData.imageQuality
                                   ? mainColor
                                   : null,
                               child: Center(
                                 child: Text(
                                   shareAsImageController.imageQulityList[index]
                                       .toString(),
-                                  style: const TextStyle(fontSize: 20),
+                                  // style: const TextStyle(fontSize: 20),
                                 ),
                               ),
                             ),
@@ -145,33 +172,26 @@ class SettingsSheet extends StatelessWidget {
                   ),
                   const Divider(),
                   CheckboxListTile(
-                    title: const Text("اظهار رقم الذكر"),
-                    value: shareAsImageController.showZikrIndex,
+                    title: Text("show zikr index".tr),
+                    value: shareAsImageData.showZikrIndex,
                     onChanged: (value) {
-                      shareAsImageController.toggleShowZikrIndex(value: value!);
+                      shareAsImageController.toggleShowZikrIndex(
+                        value: value!,
+                      );
                     },
                   ),
                   CheckboxListTile(
-                    title: const Text("اظهار الفضل"),
-                    value: shareAsImageController.showFadl,
+                    title: Text("show fadl".tr),
+                    value: shareAsImageData.showFadl,
                     onChanged: (value) {
                       shareAsImageController.toggleShowFadl(value: value!);
                     },
                   ),
                   CheckboxListTile(
-                    title: const Text("اظهار المصدر"),
-                    value: shareAsImageController.showSource,
+                    title: Text("show source of zikr".tr),
+                    value: shareAsImageData.showSource,
                     onChanged: (value) {
                       shareAsImageController.toggleShowSource(value: value!);
-                    },
-                  ),
-                  const Divider(),
-                  CheckboxListTile(
-                    title: const Text("حجم خط ثابت"),
-                    value: shareAsImageController.fixedFont,
-                    onChanged: (value) {
-                      shareAsImageController.toggleFixedContentStatus(
-                          value: value!);
                     },
                   ),
                   const SizedBox(

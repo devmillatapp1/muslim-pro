@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:muslim/app/data/models/fake_haith.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/shared/functions/print.dart';
 import 'package:muslim/core/utils/azkar_database_helper.dart';
 import 'package:muslim/core/utils/fake_hadith_database_helper.dart';
@@ -48,14 +46,15 @@ class Migration {
     }
   }
 
-  /// Copy database from assets to Database Direcorty of app
+  /// Copy database from assets to Database Directory of app
   static Future<void> _copyFromAssets({required String path}) async {
     //
     try {
       await Directory(dirname(path)).create(recursive: true);
 
-      ByteData data = await rootBundle.load(join("assets", "db", "data.db"));
-      List<int> bytes =
+      final ByteData data =
+          await rootBundle.load(join("assets", "db", "data.db"));
+      final List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       await File(path).writeAsBytes(bytes, flush: true);
@@ -83,7 +82,7 @@ class Migration {
 
     ///
     try {
-      List<DbContent> contents = [];
+      final List<DbContent> contents = [];
       await azkarOldDBHelper
           .getFavouriteContents()
           .then((value) => contents.addAll(value));
@@ -107,7 +106,7 @@ class Migration {
     }
     try {
       ///
-      List<DbTitle> titles = [];
+      final List<DbTitle> titles = [];
       await azkarOldDBHelper
           .getAllFavoriteTitles()
           .then((value) => titles.addAll(value));
@@ -132,7 +131,7 @@ class Migration {
 
     ///
     try {
-      List<DbFakeHaith> fakeHadiths = [];
+      final List<DbFakeHaith> fakeHadiths = [];
       await fakeHadithOldDBHelper
           .getAllFakeHadiths()
           .then((value) => fakeHadiths.addAll(value));
@@ -140,10 +139,12 @@ class Migration {
       for (var i = 0; i < fakeHadiths.length; i++) {
         if (fakeHadiths[i].isRead) {
           await fakeHadithDatabaseHelper.markFakeHadithAsRead(
-              dbFakeHaith: fakeHadiths[i]);
+            dbFakeHaith: fakeHadiths[i],
+          );
         } else {
           await fakeHadithDatabaseHelper.markFakeHadithAsUnRead(
-              dbFakeHaith: fakeHadiths[i]);
+            dbFakeHaith: fakeHadiths[i],
+          );
         }
       }
     } catch (e) {
@@ -152,7 +153,7 @@ class Migration {
   }
 
   /// Deleting DB from databases path
-  static deleteOldDBs() async {
+  static FutureOr<void> deleteOldDBs() async {
     await deleteFromDBPath(dbName: "hisn_elmoslem_database.db");
     await deleteFromDBPath(dbName: "fake_hadith_database.db");
   }
@@ -181,8 +182,8 @@ class Migration {
     try {
       await Directory(dirname(path)).create(recursive: true);
 
-      ByteData data = await rootBundle.load(join("assets", "db", dbName));
-      List<int> bytes =
+      final ByteData data = await rootBundle.load(join("assets", "db", dbName));
+      final List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       await File(path).writeAsBytes(bytes, flush: true);

@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:muslim/app/data/models/zikr_chapters.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/shared/functions/print.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -17,17 +15,17 @@ class AzkarOldDBHelper {
   static const String dbName = "hisn_elmoslem_database.db";
   static const int dbVersion = 1;
 
-  /* ************* Singelton Constractor ************* */
+  /* ************* Singleton Constructor ************* */
 
   static AzkarOldDBHelper? _databaseHelper;
   static Database? _database;
-
-  AzkarOldDBHelper._createInstance();
 
   factory AzkarOldDBHelper() {
     _databaseHelper ??= AzkarOldDBHelper._createInstance();
     return _databaseHelper!;
   }
+
+  AzkarOldDBHelper._createInstance();
 
   Future<Database> get database async {
     _database ??= await _initDatabase();
@@ -49,7 +47,7 @@ class AzkarOldDBHelper {
       await _copyFromAssets(path: path);
     }
 
-    return await openDatabase(
+    return openDatabase(
       path,
       version: dbVersion,
       onCreate: _onCreateDatabase,
@@ -59,28 +57,36 @@ class AzkarOldDBHelper {
   }
 
   /// On create database
-  _onCreateDatabase(Database db, int version) async {
+  FutureOr<void> _onCreateDatabase(Database db, int version) async {
     //
   }
 
   /// On upgrade database version
-  _onUpgradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onUpgradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
   /// On downgrade database version
-  _onDowngradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onDowngradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
-  /// Copy database from assets to Database Direcorty of app
-  _copyFromAssets({required String path}) async {
+  /// Copy database from assets to Database Directory of app
+  Future<void> _copyFromAssets({required String path}) async {
     //
     try {
       await Directory(dirname(path)).create(recursive: true);
 
-      ByteData data = await rootBundle.load(join("assets", "db", dbName));
-      List<int> bytes =
+      final ByteData data = await rootBundle.load(join("assets", "db", dbName));
+      final List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       await File(path).writeAsBytes(bytes, flush: true);
@@ -115,12 +121,13 @@ class AzkarOldDBHelper {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      '''SELECT 
-        titles._id,titles.name,titles.chapter_id
-        ,titles.order_id,favourite_titles.favourite
-        FROM titles
-        INNER JOIN favourite_titles
-        on favourite_titles.title_id = titles.order_id
+      '''
+SELECT 
+titles._id,titles.name,titles.chapter_id
+,titles.order_id,favourite_titles.favourite
+FROM titles
+INNER JOIN favourite_titles
+on favourite_titles.title_id = titles.order_id
         ''',
     );
 
@@ -134,7 +141,8 @@ class AzkarOldDBHelper {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      '''SELECT 
+      '''
+SELECT 
         titles._id,titles.name,titles.chapter_id
         ,titles.order_id,favourite_titles.favourite
         FROM titles
@@ -153,7 +161,8 @@ class AzkarOldDBHelper {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      '''SELECT 
+      '''
+SELECT 
           titles._id,titles.name,titles.chapter_id
           ,titles.order_id,favourite_titles.favourite
           FROM titles
@@ -175,8 +184,9 @@ class AzkarOldDBHelper {
     dbTitle.favourite = true;
 
     await db.rawUpdate(
-        'UPDATE favourite_titles SET favourite = ? WHERE title_id = ?',
-        [1, dbTitle.id]);
+      'UPDATE favourite_titles SET favourite = ? WHERE title_id = ?',
+      [1, dbTitle.id],
+    );
   }
 
   /// Remove title from favourite
@@ -185,8 +195,9 @@ class AzkarOldDBHelper {
     dbTitle.favourite = false;
 
     await db.rawUpdate(
-        'UPDATE favourite_titles SET favourite = ? WHERE title_id = ?',
-        [0, dbTitle.id]);
+      'UPDATE favourite_titles SET favourite = ? WHERE title_id = ?',
+      [0, dbTitle.id],
+    );
   }
 
   /**
@@ -198,7 +209,8 @@ class AzkarOldDBHelper {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      '''SELECT 
+      '''
+SELECT 
         contents._id ,contents.content ,contents.chapter_id 
         ,contents.title_id ,contents.order_id ,contents.count ,contents.fadl 
         ,contents.source ,favourite_contents.favourite
@@ -218,7 +230,8 @@ class AzkarOldDBHelper {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      '''SELECT 
+      '''
+SELECT 
           contents._id ,contents.content ,contents.chapter_id 
           ,contents.title_id ,contents.order_id ,contents.count ,contents.fadl 
           ,contents.source ,favourite_contents.favourite
@@ -241,7 +254,8 @@ class AzkarOldDBHelper {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      '''SELECT 
+      '''
+SELECT 
           contents._id ,contents.content ,contents.chapter_id 
           ,contents.title_id ,contents.order_id ,contents.count ,contents.fadl 
           ,contents.source ,favourite_contents.favourite
@@ -257,25 +271,29 @@ class AzkarOldDBHelper {
   }
 
   /// Add content to favourite
-  addContentToFavourite({required DbContent dbContent}) async {
+  Future<void> addContentToFavourite({required DbContent dbContent}) async {
     final Database db = await database;
     dbContent.favourite = true;
     await db.rawUpdate(
-        'UPDATE favourite_contents SET favourite = ? WHERE _id = ?',
-        [1, dbContent.id]);
+      'UPDATE favourite_contents SET favourite = ? WHERE _id = ?',
+      [1, dbContent.id],
+    );
   }
 
   /// Remove Content from favourite
-  removeContentFromFavourite({required DbContent dbContent}) async {
+  Future<void> removeContentFromFavourite({
+    required DbContent dbContent,
+  }) async {
     final Database db = await database;
     dbContent.favourite = false;
 
     await db.rawUpdate(
-        'UPDATE favourite_contents SET favourite = ? WHERE _id = ?',
-        [0, dbContent.id]);
+      'UPDATE favourite_contents SET favourite = ? WHERE _id = ?',
+      [0, dbContent.id],
+    );
   }
 
-  Future close() async {
+  Future<void> close() async {
     final db = await database;
     db.close();
   }

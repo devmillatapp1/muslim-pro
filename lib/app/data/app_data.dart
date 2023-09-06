@@ -1,7 +1,9 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:muslim/core/values/constant.dart';
+import 'package:muslim/app/data/awesome_day.dart';
 import 'package:muslim/core/utils/awesome_notification_manager.dart';
+import 'package:muslim/core/values/constant.dart';
 
 AppData appData = AppData();
 
@@ -20,22 +22,23 @@ class AppData {
   /// If it is true then
   /// page mode will be card mode
   /// if not page mode will be page
-  void changeReadModeStatus(bool val) => box.write('is_card_read_mode', val);
+  Future<void> changeReadModeStatus({required bool value}) async =>
+      box.write('is_card_read_mode', value);
 
   ///
   void toggleReadModeStatus() {
-    changeReadModeStatus(!isCardReadMode);
+    changeReadModeStatus(value: !isCardReadMode);
   }
 
   /* ******* Font Size ******* */
 
   /// get font size default value is 2.6
-  double get fontSize => box.read('font_size') ?? 2.6;
+  double get fontSize => box.read<double>('font_size') ?? 2.6;
 
   /// set font size
-  void changFontSize(double value) {
-    value = value.clamp(1.5, 4);
-    box.write('font_size', value);
+  Future<void> changFontSize(double value) async {
+    final double tempValue = value.clamp(1.5, 4);
+    await box.write('font_size', tempValue);
   }
 
   /// increase font size by .2
@@ -53,17 +56,47 @@ class AppData {
     changFontSize(fontSize - .2);
   }
 
+  /* ******* Font Size ******* */
+
+  /// get font size default value is 2.6
+  String get fontFamily => box.read('font_family') ?? "Amiri";
+
+  /// set font size
+  Future<void> changFontFamily(String value) async {
+    box.write('font_family', value);
+  }
+
+  /// increase font size by .2
+  void resetFontFamily() {
+    changFontFamily("Amiri");
+  }
+  /* ******* App Locale ******* */
+
+  /// get font size default value is 2.6
+  String get appLocale => box.read('app_locale') ?? "ar";
+
+  /// set font size
+  Future<void> changAppLocale(String value) async {
+    box.write('app_locale', value);
+  }
+
+  /// increase font size by .2
+  void resetAppLocale() {
+    changFontFamily("ar");
+  }
+
   /* ******* Tashkel ******* */
 
   /// get tashkel status
   bool get isTashkelEnabled => box.read('tashkel_status') ?? true;
 
   /// set tashkel status
-  void changTashkelStatus(bool value) => box.write('tashkel_status', value);
+  Future<void> changTashkelStatus({required bool value}) async =>
+      box.write('tashkel_status', value);
 
   ///
   void toggleTashkelStatus() {
-    changTashkelStatus(!isTashkelEnabled);
+    changTashkelStatus(value: !isTashkelEnabled);
   }
 
   /* ******* Surat al kahf alarm ******* */
@@ -72,14 +105,14 @@ class AppData {
   bool get isCaveAlarmEnabled => box.read('cave_status') ?? false;
 
   /// set Surat al kahf alarm status
-  void changCaveAlarmStatus(bool value) {
-    box.write('cave_status', value);
+  Future<void> changCaveAlarmStatus({required bool value}) async {
+    await box.write('cave_status', value);
     _activateCaveAlarm(value: value);
   }
 
   ///
   void toggleCaveAlarmStatus() {
-    changCaveAlarmStatus(!isCaveAlarmEnabled);
+    changCaveAlarmStatus(value: !isCaveAlarmEnabled);
   }
 
   /* ******* monday and thursday fast alarm ******* */
@@ -88,25 +121,26 @@ class AppData {
   bool get isFastAlarmEnabled => box.read('fast_status') ?? false;
 
   /// set monday and thursday fast alarm alarm status
-  void changFastAlarmStatus(bool value) {
-    box.write('fast_status', value);
+  Future<void> changFastAlarmStatus({required bool value}) async {
+    await box.write('fast_status', value);
     _activateFastAlarm(value: value);
   }
 
   ///
   void toggleFastAlarmStatus() {
-    changFastAlarmStatus(!isFastAlarmEnabled);
+    changFastAlarmStatus(value: !isFastAlarmEnabled);
   }
 
+  /* ******* Share as image ******* */
+
   /* ******* is first open to this release ******* */
-  /// TODO to be Edited in next update
   /// Check is first open to this release
   bool get isFirstOpenToThisRelease =>
       box.read("is_${appVersion}_first_open") ?? true;
 
   /// Change is first open to this release
-  void changIsFirstOpenToThisRelease(bool value) {
-    box.write("is_${appVersion}_first_open", value);
+  Future<void> changIsFirstOpenToThisRelease({required bool value}) async {
+    await box.write("is_${appVersion}_first_open", value);
   }
 
   /**
@@ -114,15 +148,15 @@ class AppData {
    */
 
   ///
-  _activateCaveAlarm({required bool value}) {
+  void _activateCaveAlarm({required bool value}) {
     if (value) {
       awesomeNotificationManager.addCustomWeeklyReminder(
         id: 555,
         title: "صيام غدا الإثنين",
         body:
             "قال رسول الله صلى الله عليه وسلم :\n تُعرضُ الأعمالُ يومَ الإثنين والخميسِ فأُحِبُّ أن يُعرضَ عملي وأنا صائمٌ ",
-        time: const Time(20, 00, 0),
-        day: Day.sunday,
+        time: const Time(20),
+        weekday: AwesomeDay.sunday.value,
         payload: "555",
         needToOpen: false,
       );
@@ -131,8 +165,8 @@ class AppData {
         title: "صيام غدا الخميس",
         body:
             "قال رسول الله صلى الله عليه وسلم :\n تُعرضُ الأعمالُ يومَ الإثنين والخميسِ فأُحِبُّ أن يُعرضَ عملي وأنا صائمٌ ",
-        time: const Time(20, 00, 0),
-        day: Day.wednesday,
+        time: const Time(20),
+        weekday: AwesomeDay.wednesday.value,
         payload: "666",
         needToOpen: false,
       );
@@ -143,15 +177,17 @@ class AppData {
   }
 
   ///
-  _activateFastAlarm({required bool value}) {
+  void _activateFastAlarm({required bool value}) {
     if (value) {
       awesomeNotificationManager.addCustomWeeklyReminder(
         id: 777,
-        title: "سورة الكهف",
+        title: "sura Al-Kahf".tr,
         body:
             "روى الحاكم في المستدرك مرفوعا إن من قرأ سورة الكهف يوم الجمعة أضاء له من النور ما بين الجمعتين. وصححه الألباني",
-        time: const Time(9, 00, 0),
-        day: Day.friday,
+        time: const Time(
+          9,
+        ),
+        weekday: AwesomeDay.friday.value,
         payload: "الكهف",
         needToOpen: false,
       );

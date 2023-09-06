@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/modules/tally/tally_controller.dart';
-import 'package:muslim/app/data/models/tally.dart';
 import 'package:muslim/core/values/constant.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 class TallyCard extends StatelessWidget {
   final DbTally dbTally;
 
-  TallyCard({Key? key, required this.dbTally}) : super(key: key);
+  TallyCard({super.key, required this.dbTally});
   final TallyController tallyController = Get.put(TallyController());
 
   @override
@@ -50,7 +50,7 @@ class TallyCard extends StatelessWidget {
                 ),
               ),
               subtitle: Text(DateFormat('EEEE - dd-MM-yyyy – kk:mm')
-                  .format(dbTally.lastUpdate!)),
+                  .format(dbTally.lastUpdate!),),
               trailing: Text(
                 dbTally.count.toString(),
                 style: TextStyle(
@@ -66,8 +66,8 @@ class TallyCard extends StatelessWidget {
                 Expanded(
                   child: ListTile(
                     leading: const Icon(Icons.edit),
-                    title: const Text(
-                      "تعديل",
+                    title: Text(
+                      'edit'.tr,
                       textAlign: TextAlign.center,
                     ),
                     onTap: () {
@@ -79,8 +79,8 @@ class TallyCard extends StatelessWidget {
                 Expanded(
                   child: ListTile(
                     leading: const Icon(Icons.delete),
-                    title: const Text(
-                      "حذف",
+                    title: Text(
+                      "delete".tr,
                       textAlign: TextAlign.center,
                     ),
                     onTap: () {

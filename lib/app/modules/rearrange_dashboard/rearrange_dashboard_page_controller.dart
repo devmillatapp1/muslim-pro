@@ -30,8 +30,8 @@ class RearrangeDashboardPageController extends GetxController {
   String get listArrangeString => box.read('list_arrange') ?? "";
 
   /// set Tally  Transition Vibrate mode
-  void changeListArrange(String val) {
-    box.write('list_arrange', val);
+  void changeListArrange(String value) {
+    box.write('list_arrange', value);
     update();
   }
 
@@ -39,7 +39,7 @@ class RearrangeDashboardPageController extends GetxController {
     if (listArrangeString == "") {
       list = [0, 1, 2];
     } else {
-      String tempList =
+      final String tempList =
           listArrangeString.replaceAll('[', '').replaceAll(']', '');
       list.clear();
       list.addAll(tempList.split(",").map<int>((e) => int.parse(e)).toList());
@@ -49,11 +49,12 @@ class RearrangeDashboardPageController extends GetxController {
   }
 
   void onReorder(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
+    int tempNewIndex = newIndex;
+    if (oldIndex < tempNewIndex) {
+      tempNewIndex -= 1;
     }
     final int item = list.removeAt(oldIndex);
-    list.insert(newIndex, item);
+    list.insert(tempNewIndex, item);
     changeListArrange(list.toString());
     buildListFromString();
     update();

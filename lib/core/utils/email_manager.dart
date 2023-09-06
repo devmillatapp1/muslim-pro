@@ -1,26 +1,34 @@
-import 'package:muslim/app/data/models/fake_haith.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
+import 'package:get/get.dart';
+import "package:muslim/app/data/models/models.dart";
+import 'package:muslim/app/shared/functions/open_url.dart';
 import 'package:muslim/app/shared/functions/print.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:muslim/core/values/constant.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EmailManager {
-  static const String emailOwner = "Elteyab@smart.sd";
+  static const String emailOwner = "muslimpack.org@gmail.com";
 
-  static void sendFeedback() {
+  static Future<void> sendFeedbackForm() async {
+    // Feedback form
+    await openURL(
+      'https://docs.google.com/forms/d/e/1FAIpQLSclKHlDGE-rwhllyHavhvx9EhFdwqL1kSCZWPPlpGPCn7o4fQ/viewform?usp=sf_link',
+    );
+  }
+
+  static void sendFeedbackEmail() {
     sendEmail(
       toMailId: emailOwner,
-      subject: 'تطبيق المسلم برو: تقييم التطبيق',
+      subject: "Elmoslem Pro App | Rate the app",
       body: '''
-كم من عشرة تعطي هذا التطبيق؟
+$appVersion
 
-ملاحظات:
+${"notes".tr}
 
-ما أعجبك في التطبيق:
+${"I like about this app:".tr}
 
-ما لا يعجبك في التطبيق:
+${"I don't like about this app:".tr}
 
-شئ تتمنى وجوده:
+${"Features I hope to be added:".tr}
 
 ''',
     );
@@ -29,8 +37,8 @@ class EmailManager {
   static void messageUS() {
     sendEmail(
       toMailId: emailOwner,
-      subject: 'تطبيق المسلم برو: نداء',
-      body: 'السلام عليكم ورحمة الله وبركاته' '\n',
+      subject: "Elmoslem Pro App | Chat",
+      body: '',
     );
   }
 
@@ -64,9 +72,15 @@ class EmailManager {
   }) {
     sendEmail(
       toMailId: emailOwner,
-      subject: 'تطبيق المسلم برو: خطأ إملائي ',
-      body:
-          ' السلام عليكم ورحمة الله وبركاته يوجد خطأ إملائي في\nالموضوع: $subject\nالذكر رقم: $cardNumber\nالنص: $text\nوالصواب:\n',
+      subject: "Elmoslem Pro App | Misspelled".tr,
+      body: '''
+${"There is a spelling error in".tr}
+${"Title".tr}: $subject
+${"Zikr Index".tr}: $cardNumber
+${"Text".tr}: $text
+${"It should be:".tr}:
+
+''',
     );
   }
 
@@ -75,36 +89,36 @@ class EmailManager {
   }) {
     sendEmail(
       toMailId: emailOwner,
-      subject: 'تطبيق المسلم برو: خطأ إملائي ',
+      subject: "Elmoslem Pro App | Misspelled".tr,
       body: '''
-السلام عليكم ورحمة الله وبركاته يوجد خطأ إملائي في
+${"There is a spelling error in".tr}
 
-الموضوع: أحاديث لا تصح
+${"Subject".tr}: ${"fake hadith".tr}
 
-البطاقة رقم: ${(fakeHaith.id) + 1}
+${"Card index".tr}: ${(fakeHaith.id) + 1}
 
-النص: ${fakeHaith.text}
+${"Text".tr}: ${fakeHaith.text}
 
-والصواب:
+${"It should be:".tr}:
 
 ''',
     );
   }
 
-  static void sendEmail({
+  static Future<void> sendEmail({
     required String toMailId,
     required String subject,
     required String body,
   }) async {
-    var url = 'mailto:$toMailId?subject=$subject&body=$body';
+    final url = 'mailto:$toMailId?subject=$subject&body=$body';
     try {
-      if (await canLaunchUrlString(url)) {
-        await launchUrlString(url);
+      if (await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(Uri.parse(url));
       } else {
         throw 'Could not launch $url';
       }
     } catch (e) {
-      hisnPrint(e.toString());
+      hisnPrint(e.toString() + " | " * 88);
     }
   }
 }

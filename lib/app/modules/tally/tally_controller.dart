@@ -1,16 +1,18 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:muslim/app/data/models/tally.dart';
-import 'package:muslim/core/values/constant.dart';
+import 'package:get_storage/get_storage.dart';
+import "package:muslim/app/data/models/models.dart";
+import 'package:muslim/app/modules/sound_manager/sounds_manager_controller.dart';
+import 'package:muslim/app/modules/tally/dialogs/tally_dialog.dart';
 import 'package:muslim/app/shared/dialogs/yes_no_dialog.dart';
 import 'package:muslim/app/shared/functions/get_snackbar.dart';
+import 'package:muslim/app/shared/functions/show_toast.dart';
 import 'package:muslim/core/utils/tally_database_helper.dart';
-import 'package:muslim/app/modules/tally/dialogs/add_tally_dialog.dart';
-import 'package:muslim/app/modules/tally/dialogs/edit_tally_dialog.dart';
+import 'package:muslim/core/values/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../sound_manager/sounds_manager_controller.dart';
 
 class TallyController extends GetxController {
   /* *************** Variables *************** */
@@ -21,19 +23,36 @@ class TallyController extends GetxController {
   ///
   int get counter {
     if (currentDBTally != null) {
+      if (isShuffleModeOn) {
+        int temp = 0;
+        for (final element in allTally) {
+          temp += element.count;
+        }
+        return temp;
+      }
       return currentDBTally!.count;
     } else {
       return 0;
     }
   }
 
-  double get circval =>
-      (counter.toDouble() - (counter ~/ circleResetEvery) * circleResetEvery);
+  double get circval {
+    if (isShuffleModeOn) {}
+    return counter.toDouble() -
+        (counter ~/ circleResetEvery) * circleResetEvery;
+  }
 
-  int? get circvaltimes => counter ~/ circleResetEvery;
+  int? get circvaltimes {
+    return counter ~/ circleResetEvery;
+  }
 
   ///
-  int get circleResetEvery => currentDBTally!.countReset;
+  int get circleResetEvery {
+    if (isShuffleModeOn) {
+      return 33;
+    }
+    return currentDBTally!.countReset;
+  }
 
   ///
   static const _volumeBtnChannel = MethodChannel("volume_button_channel");
@@ -44,7 +63,7 @@ class TallyController extends GetxController {
 
   ///
   DbTally? get currentDBTally {
-    for (DbTally item in allTally) {
+    for (final DbTally item in allTally) {
       if (item.isActivated) {
         return item;
       }
@@ -80,7 +99,7 @@ class TallyController extends GetxController {
         }
       }
 
-      return Future.value(null);
+      return Future.value();
     });
 
     update();
@@ -97,7 +116,7 @@ class TallyController extends GetxController {
   /* *************** Functions *************** */
   //
 
-  void getAllListsReady() async {
+  Future<void> getAllListsReady() async {
     isLoading = true;
     update();
 
@@ -109,7 +128,7 @@ class TallyController extends GetxController {
     update();
   }
 
-  updateDBTallyToView({required DbTally dbTally}) {
+  void updateDBTallyToView({required DbTally dbTally}) {
     for (DbTally item in allTally) {
       if (item.id == dbTally.id) {
         item = dbTally;
@@ -118,12 +137,12 @@ class TallyController extends GetxController {
     }
   }
 
-  checkSharedPrefs() async {
+  Future<void> checkSharedPrefs() async {
     final SharedPreferences prefs = await _sprefs;
     if (prefs.getString('counter') != null) {
       if (prefs.getString('counter') != "0") {
-        int count = int.parse((prefs.getString('counter')!));
-        DbTally dbTally = DbTally(
+        final int count = int.parse(prefs.getString('counter')!);
+        final DbTally dbTally = DbTally(
           title: "عام",
           count: count,
           created: DateTime.now(),
@@ -141,53 +160,48 @@ class TallyController extends GetxController {
     }
   }
 
-  activateTally(DbTally dbTally) async {
-    if (currentDBTally != null) {
-      currentDBTally!.isActivated = false;
-      await deactivateAllTally();
-      // updateDBTallyToView(dbTally: currentDBTally!);
+  Future<void> activateTally(DbTally dbTally) async {
+    await toggleActivateTally(dbTally);
+  }
+
+  Future<void> toggleActivateTally(DbTally dbTally) async {
+    for (final DbTally tally in allTally) {
+      if (dbTally.id == tally.id) {
+        dbTally.isActivated = true;
+        tally.isActivated = true;
+      } else {
+        tally.isActivated = false;
+      }
+      await tallyDatabaseHelper.updateTally(dbTally: tally, updateTime: false);
     }
-    dbTally.isActivated = true;
+    update();
+  }
+
+  Future<void> deactivateTally({required DbTally dbTally}) async {
+    dbTally.isActivated = false;
     await tallyDatabaseHelper.updateTally(dbTally: dbTally, updateTime: false);
     updateDBTallyToView(dbTally: dbTally);
-    // getAllListsReady();
-    // currentDBTally = dbTally;
-
-    update();
   }
 
-  deactivateCurrentTally() async {
-    if (currentDBTally != null) {
-      deactivateTally(dbTally: currentDBTally!);
-    }
-  }
-
-  deactivateTally({required DbTally dbTally}) async {
-    dbTally.isActivated = false;
-
-    await tallyDatabaseHelper.updateTally(dbTally: dbTally, updateTime: false);
-    await updateDBTallyToView(dbTally: dbTally);
-
-    update();
-  }
-
-  deactivateAllTally() async {
-    for (DbTally dbTally in allTally) {
-      await tallyDatabaseHelper.updateTally(
-          dbTally: dbTally, updateTime: false);
+  Future<void> deactivateAllTally() async {
+    for (final DbTally dbTally in allTally) {
       dbTally.isActivated = false;
       await tallyDatabaseHelper.updateTally(
-          dbTally: dbTally, updateTime: false);
+        dbTally: dbTally,
+        updateTime: false,
+      );
     }
   }
 
   /// CURD
-  createNewTally() async {
+  Future<void> createNewTally() async {
     await showDialog(
       barrierDismissible: true,
       context: Get.context!,
       builder: (BuildContext context) {
-        return AddTallyDialog(
+        return TallyDialog(
+          dbTally: DbTally(),
+          isToEdit: false,
           onSubmit: (value) async {
             await tallyDatabaseHelper.addNewTally(dbTally: value);
             getAllListsReady();
@@ -198,17 +212,94 @@ class TallyController extends GetxController {
     );
   }
 
-  updateTallyById(DbTally dbTally) async {
+  Future<void> updateTallyById(DbTally dbTally) async {
     await showDialog(
       barrierDismissible: true,
       context: Get.context!,
       builder: (BuildContext context) {
-        return EditTallyDialog(
+        return TallyDialog(
+          isToEdit: true,
           dbTally: dbTally,
           onSubmit: (value) async {
             await tallyDatabaseHelper.updateTally(
-                dbTally: value, updateTime: false);
-            await updateDBTallyToView(dbTally: value);
+              dbTally: value,
+              updateTime: false,
+            );
+            updateDBTallyToView(dbTally: value);
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> increaseDBCounter() async {
+    if (currentDBTally != null) {
+      //
+      if (circval == circleResetEvery - 1) {
+        SoundsManagerController().playZikrDoneEffects();
+      } else {
+        SoundsManagerController().playTallyEffects();
+      }
+
+      currentDBTally!.count += 1;
+      await tallyDatabaseHelper.updateTally(
+        dbTally: currentDBTally!,
+        updateTime: true,
+      );
+      update();
+
+      shuffle();
+    }
+  }
+
+  Future<void> decreaseDBCounter() async {
+    if (currentDBTally != null) {
+      currentDBTally!.count -= 1;
+      await tallyDatabaseHelper.updateTally(
+        dbTally: currentDBTally!,
+        updateTime: true,
+      );
+      update();
+    }
+  }
+
+  void resetDBCounter() {
+    if (currentDBTally != null) {
+      showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: transparent,
+        context: Get.context!,
+        builder: (BuildContext context) {
+          return YesOrNoDialog(
+            msg: "your progress will be deleted and you can't undo that".tr,
+            onYes: () async {
+              currentDBTally!.count = 0;
+              await tallyDatabaseHelper.updateTally(
+                dbTally: currentDBTally!,
+                updateTime: true,
+              );
+              update();
+            },
+          );
+        },
+      );
+    }
+  }
+
+  void deleteTallyById(DbTally dbTally) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      backgroundColor: transparent,
+      context: Get.context!,
+      builder: (BuildContext context) {
+        return YesOrNoDialog(
+          msg: "This counter will be deleted.".tr,
+          onYes: () async {
+            await tallyDatabaseHelper.deleteTally(dbTally: dbTally);
+            getAllListsReady();
+            // if (currentDBTally == dbTally) {
+            //   currentDBTally = null;
+            // }
             update();
           },
         );
@@ -216,83 +307,29 @@ class TallyController extends GetxController {
     );
   }
 
-  increaseDBCounter() async {
-    if (currentDBTally != null) {
-      //
-      if (circval == circleResetEvery - 1) {
-        SoundsManagerController().playZikrDoneEffects();
-      }
-      // int index = allTally.indexOf(currentDBTally!);
-      currentDBTally!.count += 1;
-      await tallyDatabaseHelper.updateTally(
-          dbTally: currentDBTally!, updateTime: true);
-      updateDBTallyToView(dbTally: currentDBTally!);
-      // currentDBTally = allTally[index];
-      SoundsManagerController().playTallyEffects();
-
-      update();
-    }
-  }
-
-  decreaseDBCounter() async {
-    if (currentDBTally != null) {
-      currentDBTally!.count -= 1;
-      await tallyDatabaseHelper.updateTally(
-          dbTally: currentDBTally!, updateTime: true);
-
-      updateDBTallyToView(dbTally: currentDBTally!);
-
-      update();
-    }
-  }
-
-  resetDBCounter() {
-    if (currentDBTally != null) {
-      showModalBottomSheet(
-          isScrollControlled: true,
-          backgroundColor: transparent,
-          context: Get.context!,
-          builder: (BuildContext context) {
-            return YesOrNoDialog(
-              msg:
-                  "سيتم حذف تقدمك في هذا الذكر\nهل أنت متأكد أنك تريد القيام بهذا؟",
-              onYes: () async {
-                currentDBTally!.count = 0;
-                await tallyDatabaseHelper.updateTally(
-                    dbTally: currentDBTally!, updateTime: true);
-                updateDBTallyToView(dbTally: currentDBTally!);
-
-                update();
-              },
-            );
-          });
-    }
-  }
-
-  deleteTallyById(DbTally dbTally) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        backgroundColor: transparent,
-        context: Get.context!,
-        builder: (BuildContext context) {
-          return YesOrNoDialog(
-            msg:
-                "سيتم حذف هذا الذكر بما فيه من انجاز\nهل أنت متأكد أنك تريد القيام بهذا؟",
-            onYes: () async {
-              await tallyDatabaseHelper.deleteTally(dbTally: dbTally);
-              getAllListsReady();
-              // if (currentDBTally == dbTally) {
-              //   currentDBTally = null;
-              // }
-              update();
-            },
-          );
-        });
-  }
-
-  tallySettings() {
+  void tallySettings() {
     if (currentDBTally != null) {
       updateTallyById(currentDBTally!);
+    }
+  }
+
+  /* *************** Variables *************** */
+  final box = GetStorage();
+  bool get isShuffleModeOn => box.read('is_tally_shuffle_mode_on') ?? false;
+  void toggleShuffleMode() {
+    box.write('is_tally_shuffle_mode_on', !isShuffleModeOn);
+    if (isShuffleModeOn) {
+      showToast(msg: "Shuffle Mode Activated".tr);
+    } else {
+      showToast(msg: "Shuffle Mode Deactivated".tr);
+    }
+    update();
+  }
+
+  void shuffle() {
+    if (isShuffleModeOn && allTally.length > 1) {
+      final Random rng = Random();
+      activateTally(allTally[rng.nextInt(allTally.length)]);
     }
   }
 }

@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:get/get.dart';
 import 'package:muslim/app/data/app_data.dart';
+import "package:muslim/app/data/models/models.dart";
+import 'package:muslim/app/modules/azkar_card.dart/azkar_read_card.dart';
+import 'package:muslim/app/modules/azkar_page/azkar_read_page.dart';
 import 'package:muslim/app/modules/quran/quran_controller.dart';
-import 'package:muslim/app/data/models/alarm.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
-import 'package:muslim/core/values/constant.dart';
+import 'package:muslim/app/modules/quran/quran_read_page.dart';
 import 'package:muslim/app/shared/transition_animation/transition_animation.dart';
 import 'package:muslim/core/themes/theme_services.dart';
 import 'package:muslim/core/utils/alarm_database_helper.dart';
 import 'package:muslim/core/utils/azkar_database_helper.dart';
-import 'package:muslim/app/modules/azkar_card.dart/azkar_read_card.dart';
-import 'package:muslim/app/modules/azkar_page/azkar_read_page.dart';
-import 'package:muslim/app/modules/quran/quran_read_page.dart';
+import 'package:muslim/core/values/app_dashboard.dart';
+import 'package:muslim/core/values/constant.dart';
+import 'package:intl/intl.dart';
 
-class DashboardController extends GetxController {
+class DashboardController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   /* *************** Variables *************** */
   //
   int currentIndex = 0;
@@ -26,11 +27,11 @@ class DashboardController extends GetxController {
 
   //
   TextEditingController searchController = TextEditingController();
-  late TabController tabController;
 
   //
   final ScrollController fehrsScrollController = ScrollController();
   final ScrollController bookmarksScrollController = ScrollController();
+  late TabController tabController;
 
   //
   List<DbTitle> favouriteTitle = <DbTitle>[];
@@ -46,9 +47,12 @@ class DashboardController extends GetxController {
   /* *************** Controller life cycle *************** */
   //
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     super.onInit();
 
+    ///
+
+    Intl.defaultLocale = Get.locale!.countryCode;
     //
     isLoading = true;
 
@@ -58,6 +62,7 @@ class DashboardController extends GetxController {
     //
     await getAllListsReady();
 
+    tabController = TabController(vsync: this, length: appDashboardItem.length);
     isLoading = false;
     //
     update();
@@ -68,14 +73,13 @@ class DashboardController extends GetxController {
   void onClose() {
     super.onClose();
     searchController.dispose();
-    tabController.dispose();
     fehrsScrollController.dispose();
     bookmarksScrollController.dispose();
   }
 
   /* *************** Functions *************** */
   //
-  getAllListsReady() async {
+  Future<void> getAllListsReady() async {
     /* ***** Get All Titles ***** */
     await azkarDatabaseHelper.getAllTitles().then((value) {
       allTitle = value;
@@ -104,7 +108,7 @@ class DashboardController extends GetxController {
   }
 
   //
-  getFavouriteContent() async {
+  Future<void> getFavouriteContent() async {
     await azkarDatabaseHelper.getFavouriteContents().then((value) {
       favouriteConent = value;
     });
@@ -112,14 +116,15 @@ class DashboardController extends GetxController {
   }
 
   ///
-  onNotificationClick(String payload) {
+  void onNotificationClick(String payload) {
     /// go to quran page if clicked
     if (payload == "الكهف") {
       transitionAnimation.fromBottom2Top(
-          context: Get.context!,
-          goToPage: const QuranReadPage(
-            surahName: SurahNameEnum.alKahf,
-          ));
+        context: Get.context!,
+        goToPage: const QuranReadPage(
+          surahName: SurahNameEnum.alKahf,
+        ),
+      );
     }
 
     /// ignore constant alarms if clicked
@@ -128,20 +133,24 @@ class DashboardController extends GetxController {
 
     /// go to zikr page if clicked
     else {
-      int? pageIndex = int.parse(payload);
+      final int pageIndex = int.parse(payload);
       //
       if (appData.isCardReadMode) {
         transitionAnimation.fromBottom2Top(
-            context: Get.context!, goToPage: AzkarReadCard(index: pageIndex));
+          context: Get.context!,
+          goToPage: AzkarReadCard(index: pageIndex),
+        );
       } else {
         transitionAnimation.fromBottom2Top(
-            context: Get.context!, goToPage: AzkarReadPage(index: pageIndex));
+          context: Get.context!,
+          goToPage: AzkarReadPage(index: pageIndex),
+        );
       }
     }
   }
 
   //
-  searchZikr() {
+  void searchZikr() {
     isSearching = true;
     //
     update();
@@ -149,7 +158,7 @@ class DashboardController extends GetxController {
       searchedTitle = allTitle;
     } else {
       searchedTitle = allTitle.where((zikr) {
-        var zikrTitle = zikr.name
+        final zikrTitle = zikr.name
             .replaceAll(RegExp(String.fromCharCodes(arabicTashkelChar)), "");
         return zikrTitle.contains(searchController.text);
       }).toList();
@@ -159,7 +168,7 @@ class DashboardController extends GetxController {
   }
 
   //
-  addContentToFavourite(DbContent dbContent) async {
+  Future<void> addContentToFavourite(DbContent dbContent) async {
     //
     await azkarDatabaseHelper.addContentToFavourite(dbContent: dbContent);
     //
@@ -169,7 +178,7 @@ class DashboardController extends GetxController {
   }
 
   //
-  removeContentFromFavourite(DbContent dbContent) async {
+  Future<void> removeContentFromFavourite(DbContent dbContent) async {
     //
     await azkarDatabaseHelper.removeContentFromFavourite(dbContent: dbContent);
     //
@@ -187,6 +196,7 @@ class DashboardController extends GetxController {
   ///
   void toggleTheme() {
     ThemeServices.changeThemeMode();
+    Get.forceAppUpdate();
     update();
   }
 /* ****************************** */

@@ -1,6 +1,6 @@
 # Smart Team
     muslim pro App
-    
+
 [![version](https://img.shields.io/badge/version-2.0.0-cyan.svg)](https://github.com//thesmarter/muslim-pro/tree/master)
 [![Downloads](https://PlayBadges.pavi2410.me/badge/downloads?id=com.detatech.Azkar)](https://play.google.com/store/apps/details?id=com.detatech.Azkar)
 
@@ -18,5 +18,5 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 # install
- - after clone project https://github.com/thesmarter/muslim-pro.git
- - open Terminal or Bash or CMD and Run ( flutter pub get . )
+- after clone project https://github.com/thesmarter/muslim-pro.git
+- open Terminal or Bash or CMD and Run ( flutter pub get . )

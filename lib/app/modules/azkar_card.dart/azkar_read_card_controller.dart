@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
+import "package:muslim/app/data/models/models.dart";
+import 'package:muslim/app/modules/sound_manager/sounds_manager_controller.dart';
 import 'package:muslim/core/utils/azkar_database_helper.dart';
 import 'package:wakelock/wakelock.dart';
-
-import '../sound_manager/sounds_manager_controller.dart';
 
 class AzkarReadCardController extends GetxController {
   /* *************** Constractor *************** */
@@ -19,6 +17,8 @@ class AzkarReadCardController extends GetxController {
   final vReadScaffoldKey = GlobalKey<ScaffoldState>();
   bool? isLoading = true;
   double? totalProgress = 0.0;
+  int zikrCountSum = 0;
+  double? totalProgressForEverySingle = 0.0;
 
   //
   List<DbContent> zikrContent = <DbContent>[];
@@ -29,7 +29,7 @@ class AzkarReadCardController extends GetxController {
   /* *************** Controller life cycle *************** */
   //
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     super.onInit();
 
     //
@@ -37,7 +37,7 @@ class AzkarReadCardController extends GetxController {
 
     //
     await getReady();
-
+    getEveryZikrCount();
     //
     isLoading = false;
     //
@@ -54,7 +54,7 @@ class AzkarReadCardController extends GetxController {
   /* *************** Functions *************** */
 
   /// Load all lists from its databases
-  getReady() async {
+  Future<void> getReady() async {
     await azkarDatabaseHelper
         .getTitleById(id: index)
         .then((value) => zikrTitle = value);
@@ -66,8 +66,32 @@ class AzkarReadCardController extends GetxController {
     update();
   }
 
-  checkProgress() {
-    int totalNum = 0, done = 0;
+  int decreaseCount(int counter, int index) {
+    int tempCounter = counter;
+    if (tempCounter > 0) {
+      tempCounter--;
+
+      zikrContent[index].count = tempCounter;
+
+      ///
+      SoundsManagerController().playTallyEffects();
+      if (tempCounter == 0) {
+        SoundsManagerController().playZikrDoneEffects();
+      } else if (tempCounter < 0) {
+        tempCounter = 0;
+      }
+    }
+
+    ///
+    checkProgress();
+    checkProgressForSingle();
+
+    return counter;
+  }
+
+  void checkProgress() {
+    int totalNum = 0;
+    int done = 0;
     totalNum = zikrContent.length;
     for (var i = 0; i < zikrContent.length; i++) {
       if (zikrContent[i].count == 0) {
@@ -79,6 +103,26 @@ class AzkarReadCardController extends GetxController {
       ///
       SoundsManagerController().playAllAzkarFinishedEffects();
     }
+    update();
+  }
+
+  void checkProgressForSingle() {
+    int done = 0;
+    for (var i = 0; i < zikrContent.length; i++) {
+      done += zikrContent[i].count;
+    }
+    totalProgressForEverySingle = (zikrCountSum - done) / zikrCountSum;
+
+    update();
+  }
+
+  void getEveryZikrCount() {
+    int sum = 0;
+
+    for (var i = 0; i < zikrContent.length; i++) {
+      sum += zikrContent[i].count;
+    }
+    zikrCountSum = sum;
     update();
   }
 }

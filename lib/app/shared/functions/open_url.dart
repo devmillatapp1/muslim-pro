@@ -1,9 +1,11 @@
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-openURL(String url) async {
-  if (await canLaunchUrlString(url)) {
-    await launchUrlString(url);
-  } else {
-    throw 'Could not launch $url';
-  }
+Future<void> openURL(String url) async {
+  final customURL = url;
+  final parsed = Uri.parse(customURL);
+  try {
+    if (await canLaunchUrl(parsed)) {
+      await launchUrl(parsed);
+    }
+  } catch (_) {}
 }

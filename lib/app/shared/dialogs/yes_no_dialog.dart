@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:muslim/core/values/constant.dart';
 
 class YesOrNoDialog extends StatelessWidget {
   final String msg;
-  final Function onYes;
+  final Function() onYes;
 
-  const YesOrNoDialog({Key? key, required this.onYes, required this.msg})
-      : super(key: key);
+  const YesOrNoDialog({super.key, required this.onYes, required this.msg});
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +16,17 @@ class YesOrNoDialog extends StatelessWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
         ),
-        margin: const EdgeInsets.all(0.0),
+        margin: EdgeInsets.zero,
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Text("تنويه",
-                  style: TextStyle(fontSize: 25, color: mainColor)),
+              child: Text(
+                "are you sure?".tr,
+                style: TextStyle(fontSize: 25, color: mainColor),
+              ),
             ),
             const Divider(),
             Text(
@@ -36,7 +38,7 @@ class YesOrNoDialog extends StatelessWidget {
                 Expanded(
                   child: ListTile(
                     title: Text(
-                      "نعم",
+                      "yes".tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 20, color: mainColor),
                     ),
@@ -47,16 +49,17 @@ class YesOrNoDialog extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                    child: ListTile(
-                  title: Text(
-                    "لا",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, color: mainColor),
+                  child: ListTile(
+                    title: Text(
+                      "no".tr,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20, color: mainColor),
+                    ),
+                    onTap: () {
+                      Navigator.pop<bool>(context, false);
+                    },
                   ),
-                  onTap: () {
-                    Navigator.pop<bool>(context, false);
-                  },
-                )),
+                ),
               ],
             ),
           ],

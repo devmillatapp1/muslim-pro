@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:muslim/app/data/app_data.dart';
+import 'package:muslim/core/values/constant.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import '../../data/app_data.dart';
-import '../../../core/values/constant.dart';
 
 class FontSettingsToolbox extends StatelessWidget {
   final GetxController controllerToUpdate;
@@ -11,11 +10,11 @@ class FontSettingsToolbox extends StatelessWidget {
   final bool showTashkelControllers;
 
   const FontSettingsToolbox({
-    Key? key,
+    super.key,
     required this.controllerToUpdate,
     this.showFontResizeControllers = true,
     this.showTashkelControllers = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,49 +24,50 @@ class FontSettingsToolbox extends StatelessWidget {
         Visibility(
           visible: showFontResizeControllers,
           child: Expanded(
-            flex: 1,
             child: IconButton(
-                icon: const Icon(MdiIcons.restart),
-                onPressed: () {
-                  appData.resetFontSize();
-                  controllerToUpdate.update();
-                }),
+              icon: const Icon(MdiIcons.restart),
+              onPressed: () {
+                appData.resetFontSize();
+                controllerToUpdate.update();
+              },
+            ),
           ),
         ),
         Visibility(
           visible: showFontResizeControllers,
           child: Expanded(
-            flex: 1,
             child: IconButton(
-                icon: const Icon(MdiIcons.formatFontSizeIncrease),
-                onPressed: () {
-                  appData.increaseFontSize();
-                  controllerToUpdate.update();
-                }),
+              icon: const Icon(MdiIcons.formatFontSizeIncrease),
+              onPressed: () {
+                appData.increaseFontSize();
+                controllerToUpdate.update();
+              },
+            ),
           ),
         ),
         Visibility(
           visible: showFontResizeControllers,
           child: Expanded(
-            flex: 1,
             child: IconButton(
-                icon: const Icon(MdiIcons.formatFontSizeDecrease),
-                onPressed: () {
-                  appData.decreaseFontSize();
-                  controllerToUpdate.update();
-                }),
+              icon: const Icon(MdiIcons.formatFontSizeDecrease),
+              onPressed: () {
+                appData.decreaseFontSize();
+                controllerToUpdate.update();
+              },
+            ),
           ),
         ),
         Visibility(
           visible: showTashkelControllers,
           child: Expanded(
-              flex: 1,
-              child: IconButton(
-                  icon: const Icon(MdiIcons.abjadArabic),
-                  onPressed: () {
-                    appData.toggleTashkelStatus();
-                    controllerToUpdate.update();
-                  })),
+            child: IconButton(
+              icon: const Icon(MdiIcons.abjadArabic),
+              onPressed: () {
+                appData.toggleTashkelStatus();
+                controllerToUpdate.update();
+              },
+            ),
+          ),
         ),
       ],
     );
@@ -77,8 +77,7 @@ class FontSettingsToolbox extends StatelessWidget {
 class TextSample extends StatelessWidget {
   final GetxController controllerToUpdate;
 
-  const TextSample({Key? key, required this.controllerToUpdate})
-      : super(key: key);
+  const TextSample({super.key, required this.controllerToUpdate});
   static String text =
       "سُبْحَانَكَ اللَّهُمَّ رَبَّنَا وَبِحَمْدِكَ، اللَّهُمَّ اغْفِرْ لِي";
 
@@ -94,12 +93,16 @@ class TextSample extends StatelessWidget {
               appData.isTashkelEnabled
                   ? text
                   : text.replaceAll(
-                      RegExp(String.fromCharCodes(arabicTashkelChar)), ""),
+                      RegExp(String.fromCharCodes(arabicTashkelChar)),
+                      "",
+                    ),
               textAlign: TextAlign.center,
               softWrap: true,
               textDirection: TextDirection.rtl,
               style: TextStyle(
-                  fontSize: appData.fontSize * 10, fontWeight: FontWeight.bold),
+                fontSize: appData.fontSize * 10,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

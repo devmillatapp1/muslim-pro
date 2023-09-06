@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/state_manager.dart';
+import 'package:get/get.dart';
 import 'package:muslim/app/modules/theme_manager/themes_manager_page_controller.dart';
-import 'package:muslim/app/shared/widgets/scroll_glow_custom.dart';
 import 'package:muslim/core/themes/themes_enum.dart';
 
 class ThemeManagerPage extends StatelessWidget {
-  const ThemeManagerPage({Key? key}) : super(key: key);
+  const ThemeManagerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,41 +14,48 @@ class ThemeManagerPage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: const Text("وضع الألوان داخل التطبيق",
-                style: TextStyle(fontFamily: "Uthmanic")),
+            title: Text(
+              "theme manager".tr,
+              style: const TextStyle(fontFamily: "Uthmanic"),
+            ),
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             elevation: 0,
           ),
-          body: ScrollGlowCustom(
-            child: ListView(
-              physics: const ClampingScrollPhysics(),
-              children: [
-                RadioImage(
-                  controller: controller,
-                  title: "الوضع الفاتح",
-                  imgPath: "assets/images/theme_light.png",
-                  appThemeModeValue: AppThemeMode.light,
-                ),
-                RadioImage(
-                  controller: controller,
-                  title: "الوضع الفاتح المحسن",
-                  imgPath: "assets/images/theme_yellow.png",
-                  appThemeModeValue: AppThemeMode.yellowTheme,
-                ),
-                RadioImage(
-                  controller: controller,
-                  title: "الوضع المعتم",
-                  imgPath: "assets/images/theme_dark_default.png",
-                  appThemeModeValue: AppThemeMode.defaultDark,
-                ),
-                RadioImage(
-                  controller: controller,
-                  title: "الوضع المعتم المحسن",
-                  imgPath: "assets/images/theme_dark.png",
-                  appThemeModeValue: AppThemeMode.dark,
-                ),
-              ],
-            ),
+          body: ListView(
+            physics: const BouncingScrollPhysics(),
+            children: [
+              RadioImage(
+                controller: controller,
+                title: "light theme".tr,
+                icon: Icons.light_mode,
+                appThemeModeValue: AppThemeMode.light,
+              ),
+              RadioImage(
+                controller: controller,
+                title: "optimize light theme".tr,
+                icon: Icons.light_mode,
+                appThemeModeValue: AppThemeMode.yellowTheme,
+              ),
+              const Divider(),
+              RadioImage(
+                controller: controller,
+                title: "dark theme".tr,
+                icon: Icons.dark_mode,
+                appThemeModeValue: AppThemeMode.defaultDark,
+              ),
+              RadioImage(
+                controller: controller,
+                title: "optimize dark theme".tr,
+                icon: Icons.dark_mode,
+                appThemeModeValue: AppThemeMode.dark,
+              ),
+              RadioImage(
+                controller: controller,
+                title: "True black theme".tr,
+                icon: Icons.dark_mode,
+                appThemeModeValue: AppThemeMode.trueblack,
+              ),
+            ],
           ),
         );
       },
@@ -60,26 +66,29 @@ class ThemeManagerPage extends StatelessWidget {
 class RadioImage extends StatelessWidget {
   final ThemesManagerPageController controller;
   final String title;
-  final String imgPath;
-  final dynamic appThemeModeValue;
+  final AppThemeMode appThemeModeValue;
+  final IconData icon;
 
   const RadioImage({
-    Key? key,
+    super.key,
     required this.controller,
     required this.title,
-    required this.imgPath,
-    this.appThemeModeValue,
-  }) : super(key: key);
+    required this.appThemeModeValue,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
     return RadioListTile<AppThemeMode>(
       title: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
+        child: ListTile(
+          leading: Icon(icon),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -88,15 +97,6 @@ class RadioImage extends StatelessWidget {
       onChanged: (AppThemeMode? value) {
         controller.handleThemeChange(value);
       },
-      subtitle: SizedBox(
-          height: controller.imageHeight,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Image.asset(
-              imgPath,
-              fit: BoxFit.cover,
-            ),
-          )),
     );
   }
 }

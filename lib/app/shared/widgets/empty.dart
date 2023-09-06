@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:muslim/app/shared/widgets/scroll_glow_remover.dart';
 
 class Empty extends StatelessWidget {
-  final String imagePath, title, description, buttonText;
+  final String imagePath;
+  final String title;
+  final String description;
+  final String buttonText;
   final bool isImage;
   final IconData icon;
   final double iconSize;
   final Function()? onButtonCLick;
 
   const Empty({
-    Key? key,
+    super.key,
     this.imagePath = "assets/images/app_icon.png",
     this.title = "",
     this.description = "",
@@ -18,62 +20,65 @@ class Empty extends StatelessWidget {
     this.iconSize = 90,
     this.onButtonCLick,
     this.buttonText = "اضغط هنا",
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ScrollGlowRemover(
-        child: ListView(
-          shrinkWrap: true,
-          // mainAxisSize: MainAxisSize.min,
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            imagePath == ""
-                ? const SizedBox()
-                : isImage
-                    ? Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Image.asset(
-                          imagePath,
-                          width: 50,
-                        ),
-                      )
-                    : Icon(
-                        icon,
-                        size: iconSize,
-                      ),
-            title == ""
-                ? const SizedBox()
-                : Padding(
+      child: ListView(
+        physics: const BouncingScrollPhysics(),
+        shrinkWrap: true,
+        // mainAxisSize: MainAxisSize.min,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (imagePath == "")
+            const SizedBox()
+          else
+            isImage
+                ? Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Image.asset(
+                      imagePath,
+                      width: 50,
                     ),
+                  )
+                : Icon(
+                    icon,
+                    size: iconSize,
                   ),
-            description == ""
-                ? const SizedBox()
-                : Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Text(
-                      description,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        wordSpacing: 7,
-                      ),
-                    ),
-                  ),
-            onButtonCLick != null
-                ? TextButton(onPressed: onButtonCLick!, child: Text(buttonText))
-                : const SizedBox()
-          ],
-        ),
+          if (title == "")
+            const SizedBox()
+          else
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          if (description == "")
+            const SizedBox()
+          else
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Text(
+                description,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  wordSpacing: 7,
+                ),
+              ),
+            ),
+          if (onButtonCLick != null)
+            TextButton(onPressed: onButtonCLick, child: Text(buttonText))
+          else
+            const SizedBox()
+        ],
       ),
     );
   }

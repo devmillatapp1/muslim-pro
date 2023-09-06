@@ -1,167 +1,171 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:muslim/app/views/dashboard/dashboard_controller.dart';
+import "package:muslim/app/data/models/models.dart";
+import 'package:muslim/app/data/share_as_image_data.dart';
 import 'package:muslim/app/modules/share_as_image/share_as_image_controller.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-
-import '../../../../core/themes/theme_services.dart';
+import 'package:muslim/app/views/dashboard/dashboard_controller.dart';
 
 class ImageBuilder extends StatelessWidget {
   final DbContent dbContent;
 
   const ImageBuilder({
-    Key? key,
+    super.key,
     required this.dbContent,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    String appIcon;
-    if (ThemeServices.isDarkMode()) {
-      appIcon = 'assets/images/app_icon.png';
-    } else {
-      appIcon = 'assets/images/app_icon_light.png';
-    }
-    DashboardController dashboardController = Get.put(DashboardController());
-    return GetBuilder<ShareAsImageController>(builder: (controller) {
-      String titleWithIndex =
-          "${dashboardController.allTitle[dbContent.titleId - 1].name} | ذكر رقم ${dbContent.orderId}";
-      String titleWithoutIndex =
-          dashboardController.allTitle[dbContent.titleId - 1].name;
-      return Center(
-        child: SizedBox(
-          width: controller.imageWidth.toDouble(),
-          child: Card(
-            margin: EdgeInsets.zero,
-            color: controller.backgroundColor,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    controller.showZikrIndex
-                        ? titleWithIndex
-                        : titleWithoutIndex,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
+    final DashboardController dashboardController =
+        Get.put(DashboardController());
+    return GetBuilder<ShareAsImageController>(
+      builder: (controller) {
+        final String titleWithIndex =
+            "${dashboardController.allTitle[dbContent.titleId - 1].name} | ذكر رقم ${dbContent.orderId}";
+        final String titleWithoutIndex =
+            dashboardController.allTitle[dbContent.titleId - 1].name;
+        return Center(
+          child: SizedBox(
+            width: shareAsImageData.imageWidth.toDouble(),
+            child: Card(
+              margin: EdgeInsets.zero,
+              color: shareAsImageData.backgroundColor,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      shareAsImageData.showZikrIndex
+                          ? titleWithIndex
+                          : titleWithoutIndex,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontFamily: "Uthmanic",
-                        color: controller.titleTextColor,
-                        fontSize: 20),
+                        color: shareAsImageData.titleTextColor,
+                        fontSize: 20,
+                      ),
+                    ),
                   ),
-                ),
-                Divider(
-                  color: controller.titleTextColor,
-                  thickness: controller.dividerSize,
-                ),
-                Container(
-                  constraints:
-                      const BoxConstraints(minHeight: 100, maxHeight: 350),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: AutoSizeText(
-                      dbContent.content,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                      minFontSize: 12,
-                      style: TextStyle(
-                          color: controller.bodyTextColor,
+                  Divider(
+                    color: shareAsImageData.titleTextColor,
+                    thickness: controller.dividerSize,
+                  ),
+                  Container(
+                    constraints:
+                        const BoxConstraints(minHeight: 100, maxHeight: 350),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: AutoSizeText(
+                        dbContent.content,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: shareAsImageData.bodyTextColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20),
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                // Fadl
-                Visibility(
-                  visible: !(dbContent.fadl == "") && controller.showFadl,
-                  child: Container(
-                    constraints:
-                        const BoxConstraints(minHeight: 50, maxHeight: 200),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: AutoSizeText(
-                            dbContent.fadl,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
-                            minFontSize: 10,
-                            style: TextStyle(
-                                color: controller.additionalTextColor,
+                  // Fadl
+                  Visibility(
+                    visible:
+                        !(dbContent.fadl == "") && shareAsImageData.showFadl,
+                    child: Container(
+                      constraints:
+                          const BoxConstraints(minHeight: 50, maxHeight: 200),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: AutoSizeText(
+                              dbContent.fadl,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              minFontSize: 10,
+                              style: TextStyle(
+                                color: shareAsImageData.additionalTextColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20),
+                                fontSize: 20,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                // Source
-                Visibility(
-                  visible: !(dbContent.source == "") && controller.showSource,
-                  child: Container(
-                    constraints:
-                        const BoxConstraints(minHeight: 50, maxHeight: 200),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: AutoSizeText(
-                            dbContent.source,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
-                            minFontSize: 10,
-                            style: TextStyle(
-                                color: controller.additionalTextColor,
+                  // Source
+                  Visibility(
+                    visible: !(dbContent.source == "") &&
+                        shareAsImageData.showSource,
+                    child: Container(
+                      constraints:
+                          const BoxConstraints(minHeight: 50, maxHeight: 200),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: AutoSizeText(
+                              dbContent.source,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              minFontSize: 10,
+                              style: TextStyle(
+                                color: shareAsImageData.additionalTextColor,
                                 // fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Divider(
-                  color: controller.titleTextColor,
-                  thickness: controller.dividerSize,
-                ),
-                //Bottom
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
+                  Divider(
+                    color: shareAsImageData.titleTextColor,
+                    thickness: controller.dividerSize,
+                  ),
+                  //Bottom
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
-                            width: 40,
-                            child: Image.asset(appIcon)),
+                          width: 40,
+                          child: Image.asset("assets/images/app_icon.png"),
+                        ),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 10),
                           height: 30,
                           width: controller.dividerSize,
-                          color: controller.titleTextColor,
+                          color: shareAsImageData.titleTextColor,
                         ),
                         Text(
                           "تطبيق المسلم برو",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Uthmanic",
-                              color: controller.titleTextColor,
-                              fontSize: 20),
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Uthmanic",
+                            color: shareAsImageData.titleTextColor,
+                            fontSize: 20,
+                          ),
                         )
-                      ]),
-                ),
-              ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

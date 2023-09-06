@@ -2,50 +2,50 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:muslim/app/data/app_data.dart';
-import 'package:muslim/app/views/dashboard/dashboard_controller.dart';
-import 'package:muslim/app/data/models/zikr_content.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
-import 'package:muslim/core/values/constant.dart';
+import "package:muslim/app/data/models/models.dart";
+import 'package:muslim/app/modules/azkar_card.dart/azkar_read_card.dart';
+import 'package:muslim/app/modules/azkar_page/azkar_read_page.dart';
+import 'package:muslim/app/modules/share_as_image/share_as_image.dart';
 import 'package:muslim/app/shared/functions/get_snackbar.dart';
 import 'package:muslim/app/shared/transition_animation/transition_animation.dart';
 import 'package:muslim/app/shared/widgets/empty.dart';
 import 'package:muslim/app/shared/widgets/font_settings.dart';
-import 'package:muslim/app/shared/widgets/scroll_glow_custom.dart';
+import 'package:muslim/app/views/dashboard/dashboard_controller.dart';
 import 'package:muslim/core/utils/azkar_database_helper.dart';
 import 'package:muslim/core/utils/email_manager.dart';
-import 'package:muslim/app/modules/azkar_card.dart/azkar_read_card.dart';
-import 'package:muslim/app/modules/azkar_page/azkar_read_page.dart';
-import 'package:muslim/app/modules/share_as_image/share_as_image.dart';
+import 'package:muslim/core/values/constant.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:share/share.dart';
 
 class FavouriteZikr extends StatelessWidget {
-  const FavouriteZikr({Key? key}) : super(key: key);
+  const FavouriteZikr({super.key});
 
   @override
   Widget build(BuildContext context) {
     //
-    return GetBuilder<DashboardController>(builder: (controller) {
-      return controller.favouriteConent.isEmpty
-          ? const Empty(
-              isImage: false,
-              icon: Icons.favorite_outline_rounded,
-              title: "لا يوجد شيء في المفضلة",
-              description:
-                  "لم يتم تحديد أي ذكر كمفضل \nقم بالضغط على علامة القلب ❤ عند أي ذكر داخلي",
-            )
-          : Scaffold(
-              body: Container(
-                margin: const EdgeInsets.only(bottom: 50),
-                child: ScrollGlowCustom(
+    return GetBuilder<DashboardController>(
+      builder: (controller) {
+        return controller.favouriteConent.isEmpty
+            ? Empty(
+                isImage: false,
+                icon: Icons.favorite_outline_rounded,
+                title: "nothing found in favourites".tr,
+                description:
+                    "no zikr has been selected as a favorite Click on the heart icon on any internal zikr"
+                        .tr,
+              )
+            : Scaffold(
+                body: Container(
+                  margin: const EdgeInsets.only(bottom: 50),
                   child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
                     itemCount: controller.favouriteConent.length,
                     itemBuilder: (BuildContext context, int index) {
                       //
-                      late DbContent dbContent =
+                      final DbContent dbContent =
                           controller.favouriteConent[index];
                       //
-                      DbTitle? dbTitle = controller.allTitle
+                      final DbTitle dbTitle = controller.allTitle
                           .where((element) => element.id == dbContent.titleId)
                           .first;
                       //
@@ -65,74 +65,84 @@ class FavouriteZikr extends StatelessWidget {
                                 Row(
                                   children: [
                                     Expanded(
-                                        child: IconButton(
-                                      splashRadius: 20,
-                                      icon: const Icon(MdiIcons.camera),
-                                      onPressed: () {
-                                        transitionAnimation.circleReval(
+                                      child: IconButton(
+                                        splashRadius: 20,
+                                        icon: const Icon(MdiIcons.camera),
+                                        onPressed: () {
+                                          transitionAnimation.circleReval(
                                             context: Get.context!,
                                             goToPage: ShareAsImage(
-                                                dbContent: dbContent));
-                                      },
-                                    )),
-                                    IconButton(
-                                        splashRadius: 20,
-                                        padding: const EdgeInsets.all(0),
-                                        icon: dbContent.favourite
-                                            ? Icon(Icons.favorite,
-                                                color: mainColor)
-                                            : Icon(Icons.favorite_border,
-                                                color: mainColor),
-                                        onPressed: () {
-                                          controller.removeContentFromFavourite(
-                                              dbContent);
-                                        }),
-                                    Expanded(
-                                      flex: 1,
-                                      child: IconButton(
-                                          splashRadius: 20,
-                                          padding: const EdgeInsets.all(0),
-                                          icon: Icon(Icons.copy,
-                                              color: mainColor),
-                                          onPressed: () {
-                                            FlutterClipboard.copy(
-                                                    "${dbContent.content}\n${dbContent.fadl}")
-                                                .then((result) {
-                                              // Get.snackbar("رسالة", 'تم النسخ إلى الحافظة');
-
-                                              getSnackbar(
-                                                  message:
-                                                      'تم النسخ إلى الحافظة');
-                                              // Get..currentState!.showSnackBar(snackBar);
-                                            });
-                                          }),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: IconButton(
-                                          splashRadius: 20,
-                                          padding: const EdgeInsets.all(0),
-                                          icon: Icon(Icons.share,
-                                              color: mainColor),
-                                          onPressed: () {
-                                            Share.share(
-                                                "${dbContent.content}\n${dbContent.fadl}");
-                                          }),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: IconButton(
-                                          splashRadius: 20,
-                                          padding: const EdgeInsets.all(0),
-                                          icon:
-                                              Icon(Icons.report, color: orange),
-                                          onPressed: () {
-                                            EmailManager
-                                                .sendMisspelledInZikrWithDbModel(
-                                              dbTitle: dbTitle,
                                               dbContent: dbContent,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    IconButton(
+                                      splashRadius: 20,
+                                      padding: EdgeInsets.zero,
+                                      icon: dbContent.favourite
+                                          ? Icon(
+                                              Icons.favorite,
+                                              color: mainColor,
+                                            )
+                                          : Icon(
+                                              Icons.favorite_border,
+                                              color: mainColor,
+                                            ),
+                                      onPressed: () {
+                                        controller.removeContentFromFavourite(
+                                          dbContent,
+                                        );
+                                      },
+                                    ),
+                                    Expanded(
+                                      child: IconButton(
+                                        splashRadius: 20,
+                                        padding: EdgeInsets.zero,
+                                        icon: Icon(
+                                          Icons.copy,
+                                          color: mainColor,
+                                        ),
+                                        onPressed: () {
+                                          FlutterClipboard.copy(
+                                            "${dbContent.content}\n${dbContent.fadl}",
+                                          ).then((result) {
+                                            getSnackbar(
+                                              message: "copied to clipboard".tr,
                                             );
-                                          }),
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: IconButton(
+                                        splashRadius: 20,
+                                        padding: EdgeInsets.zero,
+                                        icon: Icon(
+                                          Icons.share,
+                                          color: mainColor,
+                                        ),
+                                        onPressed: () {
+                                          Share.share(
+                                            "${dbContent.content}\n${dbContent.fadl}",
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: IconButton(
+                                        splashRadius: 20,
+                                        padding: EdgeInsets.zero,
+                                        icon: Icon(Icons.report, color: orange),
+                                        onPressed: () {
+                                          EmailManager
+                                              .sendMisspelledInZikrWithDbModel(
+                                            dbTitle: dbTitle,
+                                            dbContent: dbContent,
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -152,34 +162,40 @@ class FavouriteZikr extends StatelessWidget {
                                             ? dbContent.content
                                             : dbContent.content.replaceAll(
                                                 //* لحذف التشكيل
-                                                RegExp(String.fromCharCodes(
-                                                    arabicTashkelChar)),
-                                                ""),
+                                                RegExp(
+                                                  String.fromCharCodes(
+                                                    arabicTashkelChar,
+                                                  ),
+                                                ),
+                                                "",
+                                              ),
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                            fontSize: appData.fontSize * 10,
-                                            color: dbContent.count == 0
-                                                ? mainColor
-                                                : null,
-                                            //fontSize: 20,
-                                            fontWeight: FontWeight.w700),
+                                          fontSize: appData.fontSize * 10,
+                                          color: dbContent.count == 0
+                                              ? mainColor
+                                              : null,
+                                          //fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                     ),
-                                    dbContent.fadl == ""
-                                        ? const SizedBox()
-                                        : Padding(
-                                            padding: const EdgeInsets.all(10),
-                                            child: Text(
-                                              dbContent.fadl.toString(),
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize:
-                                                      appData.fontSize * 10,
-                                                  color: mainColor,
-                                                  //fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
+                                    if (dbContent.fadl == "")
+                                      const SizedBox()
+                                    else
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Text(
+                                          dbContent.fadl,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: appData.fontSize * 10,
+                                            color: mainColor,
+                                            //fontSize: 20,
+                                            fontWeight: FontWeight.bold,
                                           ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                                 const Divider(),
@@ -187,7 +203,7 @@ class FavouriteZikr extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(0.0),
+                                        padding: EdgeInsets.zero,
                                         child: ListTile(
                                           // tileColor:
                                           //     Theme.of(context).primaryColor,
@@ -196,7 +212,8 @@ class FavouriteZikr extends StatelessWidget {
                                             onPressed: () async {
                                               await azkarDatabaseHelper
                                                   .getContentsByContentId(
-                                                      contentId: dbContent.id)
+                                                contentId: dbContent.id,
+                                              )
                                                   .then((value) {
                                                 controller.favouriteConent[
                                                     index] = value;
@@ -208,31 +225,37 @@ class FavouriteZikr extends StatelessWidget {
                                           onTap: () {
                                             if (!appData.isCardReadMode) {
                                               transitionAnimation.circleReval(
-                                                  context: Get.context!,
-                                                  goToPage: AzkarReadPage(
-                                                      index: dbTitle.id));
+                                                context: Get.context!,
+                                                goToPage: AzkarReadPage(
+                                                  index: dbTitle.id,
+                                                ),
+                                              );
                                             } else {
                                               transitionAnimation.circleReval(
-                                                  context: Get.context!,
-                                                  goToPage: AzkarReadCard(
-                                                      index: dbTitle.id));
+                                                context: Get.context!,
+                                                goToPage: AzkarReadCard(
+                                                  index: dbTitle.id,
+                                                ),
+                                              );
                                             }
                                           },
                                           title: Text(
-                                            "الذهاب إلى ${dbTitle.name}",
+                                            "${"Go to".tr} | ${dbTitle.name}",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                                fontSize: 20,
-                                                color: mainColor,
-                                                fontWeight: FontWeight.bold),
+                                              fontSize: 20,
+                                              color: mainColor,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                           trailing: Padding(
                                             padding: const EdgeInsets.all(10),
                                             child: Text(
                                               dbContent.count.toString(),
                                               style: TextStyle(
-                                                  color: mainColor,
-                                                  fontWeight: FontWeight.bold),
+                                                color: mainColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -248,13 +271,13 @@ class FavouriteZikr extends StatelessWidget {
                     },
                   ),
                 ),
-              ),
-              bottomSheet: BottomAppBar(
-                child: FontSettingsToolbox(
-                  controllerToUpdate: controller,
+                bottomSheet: BottomAppBar(
+                  child: FontSettingsToolbox(
+                    controllerToUpdate: controller,
+                  ),
                 ),
-              ),
-            );
-    });
+              );
+      },
+    );
   }
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:muslim/app/data/models/fake_haith.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/shared/functions/print.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -15,17 +15,17 @@ class FakeHadithOldDBHelper {
   static const String dbName = "fake_hadith_database.db";
   static const int dbVersion = 1;
 
-  /* ************* Singelton Constractor ************* */
+  /* ************* Singleton Constructor ************* */
 
   static FakeHadithOldDBHelper? _databaseHelper;
   static Database? _database;
-
-  FakeHadithOldDBHelper._createInstance();
 
   factory FakeHadithOldDBHelper() {
     _databaseHelper ??= FakeHadithOldDBHelper._createInstance();
     return _databaseHelper!;
   }
+
+  FakeHadithOldDBHelper._createInstance();
 
   Future<Database> get database async {
     _database ??= await _initDatabase();
@@ -47,7 +47,7 @@ class FakeHadithOldDBHelper {
       await _copyFromAssets(path: path);
     }
 
-    return await openDatabase(
+    return openDatabase(
       path,
       version: dbVersion,
       onCreate: _onCreateDatabase,
@@ -57,28 +57,36 @@ class FakeHadithOldDBHelper {
   }
 
   // On create database
-  _onCreateDatabase(Database db, int version) async {
+  FutureOr<void> _onCreateDatabase(Database db, int version) async {
     //
   }
 
   // On upgrade database version
-  _onUpgradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onUpgradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
   // On downgrade database version
-  _onDowngradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onDowngradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
-  // Copy database from assets to Database Direcorty of app
+  // Copy database from assets to Database Directory of app
   Future<void> _copyFromAssets({required String path}) async {
     //
     try {
       await Directory(dirname(path)).create(recursive: true);
 
-      ByteData data = await rootBundle.load(join("assets", "db", dbName));
-      List<int> bytes =
+      final ByteData data = await rootBundle.load(join("assets", "db", dbName));
+      final List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       await File(path).writeAsBytes(bytes, flush: true);
@@ -126,7 +134,9 @@ class FakeHadithOldDBHelper {
     final db = await database;
 
     await db.rawUpdate(
-        'UPDATE fakehadith SET isRead = ? WHERE _id = ?', [1, dbFakeHaith.id]);
+      'UPDATE fakehadith SET isRead = ? WHERE _id = ?',
+      [1, dbFakeHaith.id],
+    );
   }
 
   // Mark hadith as unread
@@ -134,7 +144,9 @@ class FakeHadithOldDBHelper {
     final db = await database;
 
     await db.rawUpdate(
-        'UPDATE fakehadith SET isRead = ? WHERE _id = ?', [0, dbFakeHaith.id]);
+      'UPDATE fakehadith SET isRead = ? WHERE _id = ?',
+      [0, dbFakeHaith.id],
+    );
   }
 
   // Close database

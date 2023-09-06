@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:muslim/app/data/models/alarm.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/core/utils/alarm_database_helper.dart';
 
 class AlarmsPageController extends GetxController {
@@ -32,7 +32,7 @@ class AlarmsPageController extends GetxController {
   /* *************** Functions *************** */
 
   ///
-  getAllListsReady() async {
+  Future<void> getAllListsReady() async {
     alarms = <DbAlarm>[];
 
     isLoading = true;

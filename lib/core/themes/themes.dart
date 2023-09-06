@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:muslim/core/themes/const_colors.dart';
 import 'package:muslim/core/values/constant.dart';
-
-import 'const_colors.dart';
 
 class Themes {
   ///
@@ -39,11 +38,14 @@ class Themes {
       ),
       cardColor: lightColor.withAlpha(220),
       snackBarTheme: const SnackBarThemeData(
-          backgroundColor: lightColor,
-          contentTextStyle: TextStyle(color: darkColor)),
+        backgroundColor: lightColor,
+        contentTextStyle: TextStyle(color: darkColor),
+      ),
       scaffoldBackgroundColor: lightColor,
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: darkColor, splashColor: Colors.blue),
+        backgroundColor: darkColor,
+        splashColor: Colors.blue,
+      ),
     );
   }
 
@@ -75,10 +77,50 @@ class Themes {
         backgroundColor: darkColor,
       ),
       snackBarTheme: const SnackBarThemeData(
-          backgroundColor: darkColor,
-          contentTextStyle: TextStyle(color: lightColor)),
+        backgroundColor: darkColor,
+        contentTextStyle: TextStyle(color: lightColor),
+      ),
       cardColor: darkColor.withAlpha(220),
       scaffoldBackgroundColor: darkColor,
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: lightColor,
+      ),
+    );
+  }
+
+  ///
+  static ThemeData get trueBlack {
+    mainColor = const Color.fromARGB(255, 105, 187, 253);
+    scrollEndColor = black26;
+    return ThemeData.dark().copyWith(
+      primaryColor: trueBlackColor,
+      appBarTheme: const AppBarTheme(
+        elevation: 0,
+        color: trueBlackColor,
+        iconTheme: IconThemeData(
+          color: lightColor,
+        ),
+        actionsIconTheme: IconThemeData(color: lightColor),
+        titleTextStyle: TextStyle(
+          color: lightColor,
+          fontSize: 20,
+          fontFamily: "Uthmanic",
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      bottomAppBarTheme: const BottomAppBarTheme(
+        elevation: 0,
+        color: trueBlackColor,
+      ),
+      dialogTheme: const DialogTheme(
+        backgroundColor: trueBlackColor,
+      ),
+      snackBarTheme: const SnackBarThemeData(
+        backgroundColor: trueBlackColor,
+        contentTextStyle: TextStyle(color: lightColor),
+      ),
+      cardColor: trueBlackColor.withAlpha(220),
+      scaffoldBackgroundColor: trueBlackColor,
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: lightColor,
       ),
@@ -123,7 +165,6 @@ class Themes {
         elevation: 0,
         color: yellowColorPrimary,
       ),
-      bottomAppBarColor: yellowColorPrimary,
       tabBarTheme: const TabBarTheme().copyWith(
         labelColor: yellowColorSecondary,
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:muslim/core/values/constant.dart';
-import 'package:muslim/app/shared/widgets/scroll_glow_remover.dart';
 
 class DialogMaker extends StatelessWidget {
   final double height;
@@ -10,14 +9,13 @@ class DialogMaker extends StatelessWidget {
   final EdgeInsetsGeometry contentPadding;
 
   const DialogMaker({
-    Key? key,
+    super.key,
     required this.header,
     required this.content,
     required this.footer,
-    this.contentPadding =
-        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 10),
     required this.height,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +23,14 @@ class DialogMaker extends StatelessWidget {
       backgroundColor: transparent,
       contentPadding: EdgeInsets.zero,
       content: SizedBox(
-        height: height,
+        // height: height,
         width: 350.0,
         child: Card(
           clipBehavior: Clip.hardEdge,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(20.0)),
           ),
-          margin: const EdgeInsets.all(0.0),
+          margin: EdgeInsets.zero,
           color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -48,12 +46,11 @@ class DialogMaker extends StatelessWidget {
               Flexible(
                 child: Padding(
                   padding: contentPadding,
-                  child: ScrollGlowRemover(
-                    child: ListView(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      children: content,
-                    ),
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    children: content,
                   ),
                 ),
               ),

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 void hisnPrint(Object? object) {
   if (kDebugMode) {
-    print(stylizeText(text: "[HISN ELMOSLEM] ${object!}"));
+    print(stylizeText(text: "[Elmoslem Pro] ${object!}"));
   }
 }
 

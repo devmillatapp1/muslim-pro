@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:muslim/app/data/models/fake_haith.dart';
+import "package:muslim/app/data/models/models.dart";
+import 'package:muslim/app/modules/share_as_image/share_as_image.dart';
+import 'package:muslim/app/shared/transition_animation/transition_animation.dart';
 import 'package:muslim/core/utils/fake_hadith_database_helper.dart';
 
 class FakeHadithController extends GetxController {
@@ -12,7 +14,7 @@ class FakeHadithController extends GetxController {
   List<DbFakeHaith> fakeHadithList = <DbFakeHaith>[];
 
   List<DbFakeHaith> get fakeHadithReadList {
-    List<DbFakeHaith> fake = [];
+    final List<DbFakeHaith> fake = [];
     for (var i = 0; i < fakeHadithList.length; i++) {
       if (fakeHadithList[i].isRead) {
         fake.add(fakeHadithList[i]);
@@ -23,7 +25,7 @@ class FakeHadithController extends GetxController {
   }
 
   List<DbFakeHaith> get fakeHadithUnReadList {
-    List<DbFakeHaith> fake = [];
+    final List<DbFakeHaith> fake = [];
     for (var i = 0; i < fakeHadithList.length; i++) {
       if (!fakeHadithList[i].isRead) {
         fake.add(fakeHadithList[i]);
@@ -57,7 +59,7 @@ class FakeHadithController extends GetxController {
 
   /* *************** Functions *************** */
   //
-  getReady() async {
+  Future<void> getReady() async {
     await fakeHadithDatabaseHelper
         .getAllFakeHadiths()
         .then((value) => fakeHadithList = value);
@@ -67,7 +69,7 @@ class FakeHadithController extends GetxController {
   }
 
   //
-  toggleReadState({required DbFakeHaith fakeHaith}) {
+  void toggleReadState({required DbFakeHaith fakeHaith}) {
     fakeHaith.isRead = !fakeHaith.isRead;
     if (fakeHaith.isRead) {
       fakeHadithDatabaseHelper.markFakeHadithAsRead(dbFakeHaith: fakeHaith);
@@ -76,5 +78,21 @@ class FakeHadithController extends GetxController {
     }
 
     update();
+  }
+
+  // share as image
+  void shareFakehadithAsImage(DbFakeHaith dbFakeHaith) {
+    final DbContent dbContent = DbContent();
+    dbContent.titleId = -1;
+    dbContent.orderId = dbFakeHaith.id;
+    //
+    dbContent.content = dbFakeHaith.text;
+    dbContent.fadl = dbFakeHaith.darga;
+    dbContent.source = dbFakeHaith.source;
+    //
+    transitionAnimation.circleReval(
+      context: Get.context!,
+      goToPage: ShareAsImage(dbContent: dbContent),
+    );
   }
 }

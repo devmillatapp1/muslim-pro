@@ -15,61 +15,71 @@ class SoundsManagerController extends GetxController {
   bool get isTallySoundAllowed => box.read('tally_sound') ?? false;
 
   /// set Tally Sound mode
-  void changeTallySoundStatus(bool val) => box.write('tally_sound', val);
+  void changeTallySoundStatus({required bool value}) =>
+      box.write('tally_sound', value);
 
   /// get Tally Done Sound mode
   bool get isZikrDoneSoundAllowed => box.read('zikr_done_sound') ?? false;
 
   /// set Tally Done Sound mode
-  void changeZikrDoneSoundStatus(bool val) => box.write('zikr_done_sound', val);
+  void changeZikrDoneSoundStatus({required bool value}) =>
+      box.write('zikr_done_sound', value);
 
   /// get Tally Transition Sound mode
   bool get isTransitionSoundAllowed =>
       box.read('tally_transition_sound') ?? false;
 
   /// set Tally  Transition Sound mode
-  void changeTransitionSoundStatus(bool val) =>
-      box.write('tally_transition_sound', val);
+  void changeTransitionSoundStatus({required bool value}) =>
+      box.write('tally_transition_sound', value);
 
   /// get Tally Finished Sound mode
   bool get isAllAzkarFinishedSoundAllowed =>
       box.read('all_azkar_finished_sound') ?? false;
 
   /// set Tally Finished Sound mode
-  void changeAllAzkarFinishedSoundStatus(bool val) =>
-      box.write('all_azkar_finished_sound', val);
+  void changeAllAzkarFinishedSoundStatus({required bool value}) =>
+      box.write('all_azkar_finished_sound', value);
 
   /////////////////////////////
   /// Vibration
+
+  /// get Sound Effect Volume
+  double get soundEffectVolume => box.read('soundEffectVolume') ?? 1;
+
+  /// set Tally Vibrate mode
+  void changeSoundEffectVolume(double value) =>
+      box.write('soundEffectVolume', value);
 
   /// get Tally Vibrate mode
   bool get isTallyVibrateAllowed => box.read('tally_vibrate') ?? false;
 
   /// set Tally Vibrate mode
-  void changeTallyVibrateStatus(bool val) => box.write('tally_vibrate', val);
+  void changeTallyVibrateStatus({required bool value}) =>
+      box.write('tally_vibrate', value);
 
   /// get Tally Done Vibrate mode
   bool get isZikrDoneVibrateAllowed => box.read('zikr_done_vibrate') ?? false;
 
   /// set Tally Done Vibrate mode
-  void changeZikrDoneVibrateStatus(bool val) =>
-      box.write('zikr_done_vibrate', val);
+  void changeZikrDoneVibrateStatus({required bool value}) =>
+      box.write('zikr_done_vibrate', value);
 
   /// get Tally Transition Vibrate mode
   bool get isTransitionVibrateAllowed =>
       box.read('tally_transition_vibrate') ?? false;
 
   /// set Tally  Transition Vibrate mode
-  void changeTransitionVibrateStatus(bool val) =>
-      box.write('tally_transition_vibrate', val);
+  void changeTransitionVibrateStatus({required bool value}) =>
+      box.write('tally_transition_vibrate', value);
 
   /// get Tally Finished Vibrate mode
   bool get isAllAzkarFinishedVibrateAllowed =>
       box.read('all_azkar_finished_vibrate') ?? false;
 
   /// set Tally Finished Vibrate mode
-  void changeAllAzkarFinishedVibrateStatus(bool val) =>
-      box.write('all_azkar_finished_vibrate', val);
+  void changeAllAzkarFinishedVibrateStatus({required bool value}) =>
+      box.write('all_azkar_finished_vibrate', value);
 
   ///
   final player = AudioPlayer();
@@ -82,62 +92,76 @@ class SoundsManagerController extends GetxController {
   /////////////////////
   /// Play Sound
 
-  simulateTallySound() async {
+  Future<void> simulateTallySound() async {
     // player.play('sounds/tally_sound.mp3');
-    await player.play(AssetSource('sounds/tally_sound.mp3'));
+    await player.play(
+      AssetSource('sounds/tally_sound.mp3'),
+      volume: soundEffectVolume,
+    );
   }
 
-  simulateZikrDoneSound() async {
-    await player.play(AssetSource('sounds/zikr_done_sound.mp3'));
+  Future<void> simulateZikrDoneSound() async {
+    await player.play(
+      AssetSource('sounds/zikr_done_sound.mp3'),
+      volume: soundEffectVolume,
+    );
   }
 
-  simulateTransitionSound() {}
+  void simulateTransitionSound() {}
 
-  simulateAllAzkarSoundFinished() async {
-    await player.play(AssetSource('sounds/all_azkar_finished_sound.mp3'));
+  Future<void> simulateAllAzkarSoundFinished() async {
+    await player.play(
+      AssetSource('sounds/all_azkar_finished_sound.mp3'),
+      volume: soundEffectVolume,
+    );
   }
 
   /////////////////////
   /// Play vibration
 
-  simulateTallyVibrate() async {
-    await Vibration.hasCustomVibrationsSupport().then((value) => {
-          if (value!)
-            {Vibration.vibrate(duration: 100)}
-          else
-            {HapticFeedback.lightImpact()}
-        });
+  Future<void> simulateTallyVibrate() async {
+    await Vibration.hasCustomVibrationsSupport().then(
+      (value) => {
+        if (value!)
+          {Vibration.vibrate(duration: 100)}
+        else
+          {HapticFeedback.lightImpact()}
+      },
+    );
   }
 
-  simulateZikrDoneVibrate() async {
-    await Vibration.hasCustomVibrationsSupport().then((value) => {
-          if (value!)
-            {Vibration.vibrate(duration: 300)}
-          else
-            {HapticFeedback.mediumImpact()}
-        });
+  Future<void> simulateZikrDoneVibrate() async {
+    await Vibration.hasCustomVibrationsSupport().then(
+      (value) => {
+        if (value!)
+          {Vibration.vibrate(duration: 300)}
+        else
+          {HapticFeedback.mediumImpact()}
+      },
+    );
   }
 
-  simulateTransitionVibrate() async {
-    await Vibration.hasCustomVibrationsSupport().then((value) => {
-          if (value!)
-            {Vibration.vibrate(duration: 25)}
-          else
-            {HapticFeedback.vibrate()}
-        });
+  Future<void> simulateTransitionVibrate() async {
+    await Vibration.hasCustomVibrationsSupport().then(
+      (value) => {
+        if (value!)
+          {Vibration.vibrate(duration: 25)}
+        else
+          {HapticFeedback.vibrate()}
+      },
+    );
   }
 
-  simulateAllAzkarVibrateFinished() async {
-    await Vibration.hasCustomVibrationsSupport().then((value) => {
-          if (value!)
-            {Vibration.vibrate(duration: 500)}
-          else
-            {HapticFeedback.heavyImpact()}
-        });
+  Future<void> simulateAllAzkarVibrateFinished() async {
+    await Vibration.hasCustomVibrationsSupport().then(
+      (value) => {
+        if (value!) {Vibration.vibrate()} else {HapticFeedback.heavyImpact()}
+      },
+    );
   }
 
   //////////////////////////////
-  playTallyEffects() {
+  void playTallyEffects() {
     if (isTallySoundAllowed) {
       simulateTallySound();
     }
@@ -146,7 +170,7 @@ class SoundsManagerController extends GetxController {
     }
   }
 
-  playZikrDoneEffects() {
+  void playZikrDoneEffects() {
     if (isZikrDoneSoundAllowed) {
       simulateZikrDoneSound();
     }
@@ -155,7 +179,7 @@ class SoundsManagerController extends GetxController {
     }
   }
 
-  playTransitionEffects() {
+  void playTransitionEffects() {
     if (isTransitionSoundAllowed) {
       simulateTransitionSound();
     }
@@ -164,7 +188,7 @@ class SoundsManagerController extends GetxController {
     }
   }
 
-  playAllAzkarFinishedEffects() {
+  void playAllAzkarFinishedEffects() {
     if (isAllAzkarFinishedSoundAllowed) {
       simulateAllAzkarSoundFinished();
     }

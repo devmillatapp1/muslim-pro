@@ -1,44 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:muslim/core/values/constant.dart';
+import 'package:get/get.dart';
 import 'package:muslim/app/shared/custom_inputs/number_field.dart';
 import 'package:muslim/app/shared/dialogs/dialog_maker.dart';
+import 'package:muslim/core/values/constant.dart';
 
 class ImageWidthDialog extends StatelessWidget {
   final Function(String) onSubmit;
   final String initialValue;
 
   const ImageWidthDialog({
-    Key? key,
+    super.key,
     required this.onSubmit,
     required this.initialValue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController widthController =
+    final TextEditingController widthController =
         TextEditingController(text: initialValue);
     return DialogMaker(
       height: 270,
       header: Text(
-        "تعديل عرض الصورة",
+        "ُEdit image size".tr,
         style: TextStyle(
           fontSize: 25,
           color: mainColor,
         ),
       ),
       content: [
-        const Text(
-          "قم بادخال العرض وعليه يتم تحديد ارتفاع الصورة تلقائيا تبعا لحجم النص وإعدادتك",
+        Text(
+          "Image width".tr,
           textAlign: TextAlign.center,
         ),
         UserNumberField(
           controller: widthController,
-          hintText: "أدخل عرض الصورة",
+          hintText: "Image width".tr,
         ),
       ],
       footer: ListTile(
         title: Text(
-          "تم",
+          "done".tr,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 20, color: mainColor),
         ),

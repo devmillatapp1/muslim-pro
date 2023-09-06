@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/core/themes/theme_services.dart';
 
-import '../../data/models/json/quran.dart';
-
-enum SurahNameEnum { alMulk, assajdah, alKahf }
+enum SurahNameEnum { alMulk, assajdah, alKahf, endofAliImran }
 
 class QuranPageController extends GetxController {
   /* *************** Variables *************** */
@@ -21,7 +20,7 @@ class QuranPageController extends GetxController {
 
   //
   final quranReadPageScaffoldKey = GlobalKey<ScaffoldState>();
-  PageController pageController = PageController(initialPage: 0);
+  PageController pageController = PageController();
   int currentPage = 0;
 
   //
@@ -37,7 +36,7 @@ class QuranPageController extends GetxController {
   /* *************** Controller life cycle *************** */
   //
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     super.onInit();
     // hide status bar
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
@@ -62,7 +61,7 @@ class QuranPageController extends GetxController {
         }
       }
 
-      return Future.value(null);
+      return Future.value();
     });
 
     isLoading = false;
@@ -77,25 +76,29 @@ class QuranPageController extends GetxController {
     //
     _volumeBtnChannel.setMethodCallHandler(null);
     //
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
   }
 
   /* *************** Functions *************** */
 
   ///
-  perpareRequiredPages(SurahNameEnum surahName) {
-    if (surahName == SurahNameEnum.alKahf) {
+  void perpareRequiredPages(SurahNameEnum surahName) {
+    if (surahName == SurahNameEnum.endofAliImran) {
       quranRequiredSurah = quranDisplay[0];
-    } else if (surahName == SurahNameEnum.assajdah) {
+    } else if (surahName == SurahNameEnum.alKahf) {
       quranRequiredSurah = quranDisplay[1];
-    } else if (surahName == SurahNameEnum.alMulk) {
+    } else if (surahName == SurahNameEnum.assajdah) {
       quranRequiredSurah = quranDisplay[2];
+    } else if (surahName == SurahNameEnum.alMulk) {
+      quranRequiredSurah = quranDisplay[3];
     }
   }
 
   ///
-  preparePages() async {
+  Future<void> preparePages() async {
     await fetchAzkar().then((value) {
       _quran.addAll(value);
       quranDisplay = _quran;
@@ -104,20 +107,23 @@ class QuranPageController extends GetxController {
 
   ///
   Future<List<Quran>> fetchAzkar() async {
-    String data = await rootBundle.loadString('assets/json/quran.json');
+    final String data = await rootBundle.loadString('assets/json/quran.json');
 
-    var quran = <Quran>[];
+    final quran = <Quran>[];
 
-    var quranJson = json.decode(data);
-    for (var quranJson in quranJson) {
-      quran.add(Quran.fromJson(quranJson));
+    final quranJson = json.decode(data);
+
+    if (quranJson is List) {
+      for (final item in quranJson) {
+        quran.add(Quran.fromJson(item as Map<String, dynamic>));
+      }
     }
 
     return quran;
   }
 
   ///
-  onPageViewChange(int page) {
+  void onPageViewChange(int page) {
     //  currentPage = page;
     currentPage = page;
     update();

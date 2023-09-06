@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:muslim/app/data/models/alarm.dart';
-import 'package:muslim/app/data/models/zikr_title.dart';
+import "package:muslim/app/data/models/models.dart";
 import 'package:muslim/app/shared/functions/print.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -19,14 +18,14 @@ class AlarmDatabaseHelper {
   static AlarmDatabaseHelper? _databaseHelper;
   static Database? _database;
 
-  /* ************* Singelton Constractor ************* */
-
-  AlarmDatabaseHelper._createInstance();
+  /* ************* Singleton Constructor ************* */
 
   factory AlarmDatabaseHelper() {
     _databaseHelper ??= AlarmDatabaseHelper._createInstance();
     return _databaseHelper!;
   }
+
+  AlarmDatabaseHelper._createInstance();
 
   Future<Database> get database async {
     _database ??= await _initDatabase();
@@ -48,7 +47,7 @@ class AlarmDatabaseHelper {
       await _copyFromAssets(path: path);
     }
 
-    return await openDatabase(
+    return openDatabase(
       path,
       version: dbVersion,
       onCreate: _onCreateDatabase,
@@ -58,28 +57,36 @@ class AlarmDatabaseHelper {
   }
 
   // On create database
-  _onCreateDatabase(Database db, int version) async {
+  FutureOr<void> _onCreateDatabase(Database db, int version) async {
     //
   }
 
   // On upgrade database version
-  _onUpgradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onUpgradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
   // On downgrade database version
-  _onDowngradeDatabase(Database db, int oldVersion, int newVersion) {
+  FutureOr<void> _onDowngradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) {
     //
   }
 
-  // Copy database from assets to Database Direcorty of app
-  _copyFromAssets({required String path}) async {
+  // Copy database from assets to Database Directory of app
+  FutureOr<void> _copyFromAssets({required String path}) async {
     //
     try {
       await Directory(dirname(path)).create(recursive: true);
 
-      ByteData data = await rootBundle.load(join("assets", "db", dbName));
-      List<int> bytes =
+      final ByteData data = await rootBundle.load(join("assets", "db", dbName));
+      final List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       await File(path).writeAsBytes(bytes, flush: true);
@@ -111,11 +118,11 @@ class AlarmDatabaseHelper {
     );
 
     if (maps.isNotEmpty) {
-      DbAlarm dbAlarm = DbAlarm.fromMap(maps[0]);
+      final DbAlarm dbAlarm = DbAlarm.fromMap(maps[0]);
 
       return dbAlarm;
     } else {
-      DbAlarm tempAlarm = DbAlarm(titleId: dbTitle.orderId);
+      final DbAlarm tempAlarm = DbAlarm(titleId: dbTitle.orderId);
       return tempAlarm;
     }
   }

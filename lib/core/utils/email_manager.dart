@@ -6,7 +6,7 @@ import 'package:muslim/core/values/constant.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EmailManager {
-  static const String emailOwner = "muslimpack.org@gmail.com";
+  static const String emailOwner = "elteyab@smart.sd";
 
   static Future<void> sendFeedbackForm() async {
     // Feedback form

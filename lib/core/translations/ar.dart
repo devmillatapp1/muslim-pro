@@ -58,6 +58,7 @@ const Map<String, String> ar = {
   "reminders manager": "إدارة تنبيهات الأذكار",
   "fasting mondays and thursdays reminder": " منبه صيام الاثنين والخميس",
   "sura Al-Kahf reminder": "تذكير قراءة سورة الكهف",
+  "sura Al-Mulk reminder": "تذكير قراءة سورة الملك (كل ليلة)",
   //
   "contact": "التواصل",
   "report bugs and request new features": "الشكاوى والمقترحات",

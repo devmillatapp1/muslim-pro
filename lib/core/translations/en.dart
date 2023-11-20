@@ -59,6 +59,7 @@ const Map<String, String> en = {
   "fasting mondays and thursdays reminder":
       "Fasting Mondays and Thursdays Reminder",
   "sura Al-Kahf reminder": "Surah Al-Kahf Reminder",
+  "sura Al-Mulk reminder": "Surah Al-Mulk Reminder (every night)",
   //
   "contact": "Contact",
   "report bugs and request new features":

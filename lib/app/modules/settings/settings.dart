@@ -144,6 +144,34 @@ class Settings extends StatelessWidget {
                   leading: const Icon(
                     Icons.person,
                   ),
+                  title: Text("sura Al-Mulk reminder".tr),
+                ),
+                activeColor: mainColor,
+                value: appData.isMulkAlarmEnabled,
+                onChanged: (value) {
+                  appData.changMulkAlarmStatus(value: value);
+
+                  if (appData.isMulkAlarmEnabled) {
+                    getSnackbar(
+                      message:
+                          "${"activate".tr} | ${"sura Al-Mulk reminder".tr}",
+                    );
+                  } else {
+                    getSnackbar(
+                      message:
+                          "${"deactivate".tr} | ${"sura Al-Mulk reminder".tr}",
+                    );
+                  }
+                  controller.update();
+                },
+              ),
+
+              SwitchListTile(
+                title: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(
+                    Icons.person,
+                  ),
                   title: Text("fasting mondays and thursdays reminder".tr),
                 ),
                 activeColor: mainColor,
@@ -165,6 +193,7 @@ class Settings extends StatelessWidget {
                   controller.update();
                 },
               ),
+
               SwitchListTile(
                 title: ListTile(
                   contentPadding: EdgeInsets.zero,

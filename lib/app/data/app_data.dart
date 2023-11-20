@@ -70,6 +70,7 @@ class AppData {
   void resetFontFamily() {
     changFontFamily("Amiri");
   }
+
   /* ******* App Locale ******* */
 
   /// get font size default value is 2.6
@@ -126,6 +127,17 @@ class AppData {
     _activateFastAlarm(value: value);
   }
 
+  /* ******* Al-mulk alarm ******* */
+
+  /// get Mulk alarm alarm status
+  bool get isMulkAlarmEnabled => box.read('mulk_status') ?? false;
+
+  /// set Mulk alarm alarm status
+  Future<void> changMulkAlarmStatus({required bool value}) async {
+    await box.write('mulk_status', value);
+    _activateMulkAlarm(value: value);
+  }
+
   ///
   void toggleFastAlarmStatus() {
     changFastAlarmStatus(value: !isFastAlarmEnabled);
@@ -134,6 +146,7 @@ class AppData {
   /* ******* Share as image ******* */
 
   /* ******* is first open to this release ******* */
+
   /// Check is first open to this release
   bool get isFirstOpenToThisRelease =>
       box.read("is_${appVersion}_first_open") ?? true;
@@ -193,6 +206,23 @@ class AppData {
       );
     } else {
       awesomeNotificationManager.cancelNotificationById(id: 777);
+    }
+  }
+
+  void _activateMulkAlarm({required bool value}) {
+    if (value) {
+      awesomeNotificationManager.addCustomDailyReminder(
+        id: 777,
+        title: "sura Al-Mulk".tr,
+        body:
+            "قال صلى الله عليه وسلم: سورة تبارك هي المانعة من عذاب القبر. رواه الحاكم",
+        time: const Time(19, 30, 00),
+        // weekday: AwesomeDay.friday.value,
+        payload: "الملك",
+        needToOpen: false,
+      );
+    } else {
+      awesomeNotificationManager.cancelNotificationById(id: 797);
     }
   }
 }

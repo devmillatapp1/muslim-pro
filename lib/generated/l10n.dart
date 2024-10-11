@@ -19,7 +19,7 @@ class S {
 
   static S get current {
     assert(_current != null,
-        'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
+    'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
     return _current!;
   }
 
@@ -42,7 +42,7 @@ class S {
   static S of(BuildContext context) {
     final instance = S.maybeOf(context);
     assert(instance != null,
-        'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?');
+    'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?');
     return instance!;
   }
 
@@ -130,6 +130,16 @@ class S {
     );
   }
 
+  /// `Alarm Editor`
+  String get alarmEditor {
+    return Intl.message(
+      'Alarm Editor',
+      name: 'alarmEditor',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Allow`
   String get allow {
     return Intl.message(
@@ -145,6 +155,26 @@ class S {
     return Intl.message(
       'Allow app to send notifications?',
       name: 'allowNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow Zikr session restoration`
+  String get allowZikrRestoreSession {
+    return Intl.message(
+      'Allow Zikr session restoration',
+      name: 'allowZikrRestoreSession',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Popup menu to resume uncompleted Zikr session `
+  String get allowZikrRestoreSessionDesc {
+    return Intl.message(
+      'Popup menu to resume uncompleted Zikr session ',
+      name: 'allowZikrRestoreSessionDesc',
       desc: '',
       args: [],
     );
@@ -553,7 +583,7 @@ class S {
   /// `A digital copy of Elmoslem Pro was used from the Aloka Network.`
   String get digitalCopyOfElmoslemPro {
     return Intl.message(
-      'A digital copy of Elmoslem Pro was used from the Aloka Network.',
+      'A digital copy of Hisn ELmoslem was used from the Aloka Network.',
       name: 'digitalCopyOfElmoslemPro',
       desc: '',
       args: [],
@@ -585,6 +615,16 @@ class S {
     return Intl.message(
       'Done',
       name: 'done',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Don't ask again`
+  String get donnotAskAgain {
+    return Intl.message(
+      'Don\'t ask again',
+      name: 'donnotAskAgain',
       desc: '',
       args: [],
     );
@@ -2029,6 +2069,16 @@ class S {
     );
   }
 
+  /// `Tally Editor`
+  String get tallyEditor {
+    return Intl.message(
+      'Tally Editor',
+      name: 'tallyEditor',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Text`
   String get text {
     return Intl.message(
@@ -2242,10 +2292,8 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
 
   @override
   bool isSupported(Locale locale) => _isSupported(locale);
-
   @override
   Future<S> load(Locale locale) => S.load(locale);
-
   @override
   bool shouldReload(AppLocalizationDelegate old) => false;
 

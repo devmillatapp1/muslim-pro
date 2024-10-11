@@ -3,88 +3,36 @@ import 'package:muslim/generated/l10n.dart';
 
 enum ZikrFilter {
   /// Source
-  quran,
-  sahihBukhari,
-  sahihMuslim,
-  abuDawood,
-  atTirmidhi,
-  anNasai,
-  ibnMajah,
-  malik,
-  adDarami,
-  ahmad,
-  ibnSunny,
-  hakim,
-  bayhaqi,
-  atTabarani,
-  athar,
+  quran("سورة", false),
+  sahihBukhari("بخار", false),
+  sahihMuslim("مسلم", false),
+  abuDawood("داود", false),
+  atTirmidhi("الترمذي", false),
+  anNasai("نسا", false),
+  ibnMajah("ماجه", false),
+  malik("موط", false),
+  adDarami("دارم", false),
+  ahmad("أحمد", false),
+  ibnSunny("السني", false),
+  hakim("حاكم", false),
+  bayhaqi("بيهق", false),
+  atTabarani("طبران", false),
+  athar("أثر", false),
 
   /// Hokm
-  hokmSahih,
-  hokmHasan,
-  hokmDaeif,
-  hokmMawdue,
-  hokmAthar,
+  hokmQuran("قرآن", true),
+  hokmSahih("صحيح", true),
+  hokmHasan("حسن", true),
+  hokmDaeif("ضعيف", true),
+  hokmMawdue("موضوع", true),
+  hokmAthar("أثر", true);
+
+  const ZikrFilter(this.lookupWord, this.isForHokm);
+  final String lookupWord;
+  final bool isForHokm;
 }
 
 extension ZikrFilterExt on ZikrFilter {
-  List<ZikrFilter> get hokmFilters => [
-        ZikrFilter.hokmSahih,
-        ZikrFilter.hokmHasan,
-        ZikrFilter.hokmDaeif,
-        ZikrFilter.hokmMawdue,
-        ZikrFilter.hokmAthar,
-      ];
-
-  bool get isForHokm => hokmFilters.contains(this);
-
-  String get nameInDatabase {
-    switch (this) {
-      case ZikrFilter.quran:
-        return "سورة";
-      case ZikrFilter.sahihBukhari:
-        return "بخار";
-      case ZikrFilter.sahihMuslim:
-        return "مسلم";
-      case ZikrFilter.abuDawood:
-        return "داود";
-      case ZikrFilter.atTirmidhi:
-        return "الترمذي";
-      case ZikrFilter.anNasai:
-        return "نسا";
-      case ZikrFilter.ibnMajah:
-        return "ماجه";
-      case ZikrFilter.malik:
-        return "موط";
-      case ZikrFilter.adDarami:
-        return "دارم";
-      case ZikrFilter.ahmad:
-        return "أحمد";
-      case ZikrFilter.ibnSunny:
-        return "السني";
-      case ZikrFilter.hakim:
-        return "حاكم";
-      case ZikrFilter.bayhaqi:
-        return "بيهق";
-      case ZikrFilter.atTabarani:
-        return "طبران";
-      case ZikrFilter.athar:
-        return "أثر";
-
-      ///
-      case ZikrFilter.hokmSahih:
-        return "صحيح";
-      case ZikrFilter.hokmHasan:
-        return "حسن";
-      case ZikrFilter.hokmDaeif:
-        return "ضعيف";
-      case ZikrFilter.hokmMawdue:
-        return "موضوع";
-      case ZikrFilter.hokmAthar:
-        return "أثر";
-    }
-  }
-
   String localeName(BuildContext context) {
     switch (this) {
       case ZikrFilter.quran:
@@ -118,7 +66,9 @@ extension ZikrFilterExt on ZikrFilter {
       case ZikrFilter.atTabarani:
         return S.of(context).sourceAtTabarani;
 
-      ///
+    ///
+      case ZikrFilter.hokmQuran:
+        return S.of(context).sourceQuran;
       case ZikrFilter.hokmSahih:
         return S.of(context).hokmSahih;
       case ZikrFilter.hokmHasan:

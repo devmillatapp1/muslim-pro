@@ -4,6 +4,7 @@ import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/di/dependency_injection.dart';
 import 'package:muslim/src/core/extensions/extension.dart';
 import 'package:muslim/src/core/extensions/extension_platform.dart';
+import 'package:muslim/src/core/models/editor_result.dart';
 import 'package:muslim/src/features/alarms_manager/data/models/alarm.dart';
 import 'package:muslim/src/features/alarms_manager/presentation/components/alarm_editor.dart';
 import 'package:muslim/src/features/alarms_manager/presentation/controller/bloc/alarms_bloc.dart';
@@ -99,59 +100,66 @@ class _TitleCardAlarmButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return dbAlarm == null
         ? IconButton(
-            icon: const Icon(Icons.alarm_add_rounded),
-            onPressed: () async {
-              final DbAlarm? editedAlarm = await showAlarmEditorDialog(
-                context: context,
-                dbAlarm: alarm,
-                isToEdit: false,
-              );
+      icon: const Icon(Icons.alarm_add_rounded),
+      onPressed: () async {
+        final EditorResult<DbAlarm>? result = await showAlarmEditorDialog(
+          context: context,
+          dbAlarm: alarm,
+          isToEdit: false,
+        );
 
-              if (editedAlarm == null) return;
-              if (!context.mounted) return;
+        if (result == null) return;
+        if (!context.mounted) return;
 
-              context.read<AlarmsBloc>().add(AlarmsAddEvent(editedAlarm));
-            },
-          )
+        context.read<AlarmsBloc>().add(AlarmsAddEvent(result.value));
+      },
+    )
         : GestureDetector(
-            onLongPress: () async {
-              final DbAlarm? editedAlarm = await showAlarmEditorDialog(
-                context: context,
-                dbAlarm: alarm,
-                isToEdit: true,
-              );
+      onLongPress: () async {
+        final EditorResult<DbAlarm>? result = await showAlarmEditorDialog(
+          context: context,
+          dbAlarm: alarm,
+          isToEdit: true,
+        );
 
-              if (editedAlarm == null) return;
-              if (!context.mounted) return;
-
-              context.read<AlarmsBloc>().add(AlarmsEditEvent(editedAlarm));
-            },
-            child: alarm.isActive
-                ? IconButton(
-                    icon: Icon(
-                      Icons.notifications_active,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    onPressed: () {
-                      context.read<AlarmsBloc>().add(
-                            AlarmsEditEvent(
-                              alarm.copyWith(isActive: false),
-                            ),
-                          );
-                    },
-                  )
-                : IconButton(
-                    icon: const Icon(
-                      Icons.notifications_off,
-                    ),
-                    onPressed: () {
-                      context.read<AlarmsBloc>().add(
-                            AlarmsEditEvent(
-                              alarm.copyWith(isActive: true),
-                            ),
-                          );
-                    },
-                  ),
+        if (result == null) return;
+        if (!context.mounted) return;
+        switch (result.action) {
+          case EditorActionEnum.edit:
+            context.read<AlarmsBloc>().add(AlarmsEditEvent(result.value));
+          case EditorActionEnum.delete:
+            context
+                .read<AlarmsBloc>()
+                .add(AlarmsRemoveEvent(result.value));
+          default:
+        }
+      },
+      child: alarm.isActive
+          ? IconButton(
+        icon: Icon(
+          Icons.notifications_active,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        onPressed: () {
+          context.read<AlarmsBloc>().add(
+            AlarmsEditEvent(
+              alarm.copyWith(isActive: false),
+            ),
           );
+        },
+      )
+          : IconButton(
+        icon: const Icon(
+          Icons.notifications_off,
+        ),
+        onPressed: () {
+          context.read<AlarmsBloc>().add(
+            AlarmsEditEvent(
+              alarm.copyWith(isActive: true),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

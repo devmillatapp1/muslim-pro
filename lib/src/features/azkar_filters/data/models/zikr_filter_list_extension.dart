@@ -1,6 +1,5 @@
 import 'package:muslim/src/core/di/dependency_injection.dart';
 import 'package:muslim/src/features/azkar_filters/data/models/zikr_filter.dart';
-import 'package:muslim/src/features/azkar_filters/data/models/zikr_filter_enum.dart';
 import 'package:muslim/src/features/azkar_filters/data/repository/azakr_filters_repo.dart';
 import 'package:muslim/src/features/zikr_viewer/data/models/zikr_content.dart';
 
@@ -30,7 +29,7 @@ extension FilterListExt on List<Filter> {
     for (final e in this) {
       if (!e.isActivated || e.filter.isForHokm) continue;
 
-      isValid = source.contains(e.filter.nameInDatabase);
+      isValid = source.contains(e.filter.lookupWord);
 
       if (isValid) break;
     }
@@ -44,7 +43,7 @@ extension FilterListExt on List<Filter> {
     for (final e in this) {
       if (!e.isActivated || !e.filter.isForHokm) continue;
 
-      isValid = hokm == e.filter.nameInDatabase;
+      isValid = hokm == e.filter.lookupWord;
 
       if (isValid) break;
     }

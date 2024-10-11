@@ -2,22 +2,22 @@ import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/functions/show_toast.dart';
+import 'package:muslim/src/core/models/editor_result.dart';
 import 'package:muslim/src/core/shared/custom_inputs/custom_field_decoration.dart';
 import 'package:muslim/src/features/alarms_manager/data/models/alarm.dart';
 import 'package:muslim/src/features/alarms_manager/data/models/alarm_repeat_type.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
-Future<DbAlarm?> showAlarmEditorDialog({
+Future<EditorResult<DbAlarm>?> showAlarmEditorDialog({
   required BuildContext context,
   required DbAlarm dbAlarm,
   required bool isToEdit,
 }) async {
-  // show the dialog
-  return showDialog(
+  return showDialog<EditorResult<DbAlarm>?>(
     barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
-      return AlarmEditorDialog(
+      return _AlarmEditor(
         dbAlarm: dbAlarm,
         isToEdit: isToEdit,
       );
@@ -25,21 +25,20 @@ Future<DbAlarm?> showAlarmEditorDialog({
   );
 }
 
-class AlarmEditorDialog extends StatefulWidget {
+class _AlarmEditor extends StatefulWidget {
   final DbAlarm dbAlarm;
   final bool isToEdit;
 
-  const AlarmEditorDialog({
-    super.key,
+  const _AlarmEditor({
     required this.dbAlarm,
     required this.isToEdit,
   });
 
   @override
-  AlarmEditorDialogState createState() => AlarmEditorDialogState();
+  _AlarmEditorState createState() => _AlarmEditorState();
 }
 
-class AlarmEditorDialogState extends State<AlarmEditorDialog> {
+class _AlarmEditorState extends State<_AlarmEditor> {
   late TimeOfDay _time = TimeOfDay.now();
 
   bool iosStyle = true;
@@ -86,15 +85,7 @@ class AlarmEditorDialogState extends State<AlarmEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        () {
-          if (widget.isToEdit) {
-            return S.of(context).editReminder;
-          } else {
-            return S.of(context).addReminder;
-          }
-        }(),
-      ),
+      title: Text(S.of(context).alarmEditor),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -125,8 +116,8 @@ class AlarmEditorDialogState extends State<AlarmEditorDialog> {
                 selectedHour == null || selectedMinute == null
                     ? S.of(context).clickToChooseTime
                     : DateFormat("hh:mm a").format(
-                        DateTime(1, 1, 1, selectedHour!, selectedMinute!),
-                      ),
+                  DateTime(1, 1, 1, selectedHour!, selectedMinute!),
+                ),
                 textAlign: TextAlign.center,
                 textDirection: TextDirection.ltr,
               ),
@@ -169,17 +160,17 @@ class AlarmEditorDialogState extends State<AlarmEditorDialog> {
               items: AlarmRepeatType.values
                   .map<DropdownMenuItem<AlarmRepeatType>>(
                       (AlarmRepeatType value) {
-                return DropdownMenuItem<AlarmRepeatType>(
-                  // alignment: Alignment.center,
+                    return DropdownMenuItem<AlarmRepeatType>(
+                      // alignment: Alignment.center,
 
-                  value: value,
-                  child: Text(
-                    value.getUserFriendlyName(context),
+                      value: value,
+                      child: Text(
+                        value.getUserFriendlyName(context),
 
-                    // textAlign: TextAlign.center,
-                  ),
-                );
-              }).toList(),
+                        // textAlign: TextAlign.center,
+                      ),
+                    );
+                  }).toList(),
             ),
           ),
         ],
@@ -194,9 +185,28 @@ class AlarmEditorDialogState extends State<AlarmEditorDialog> {
             Navigator.pop(context);
           },
         ),
+        if (widget.isToEdit)
+          TextButton(
+            child: Text(
+              S.of(context).delete,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).buttonTheme.colorScheme?.error,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(
+                context,
+                EditorResult(
+                  value: widget.dbAlarm,
+                  action: EditorActionEnum.delete,
+                ),
+              );
+            },
+          ),
         FilledButton(
           child: Text(
-            S.of(context).done,
+            widget.isToEdit ? S.of(context).edit : S.of(context).add,
             textAlign: TextAlign.center,
           ),
           onPressed: () {
@@ -210,12 +220,26 @@ class AlarmEditorDialogState extends State<AlarmEditorDialog> {
                   repeatType: repeatType,
                 );
 
+                if (widget.dbAlarm == editedAlarm) {
+                  Navigator.pop(context);
+                  return;
+                }
+
                 if (widget.isToEdit) {
-                  Navigator.pop(context, editedAlarm);
+                  Navigator.pop(
+                    context,
+                    EditorResult(
+                      value: editedAlarm,
+                      action: EditorActionEnum.edit,
+                    ),
+                  );
                 } else {
                   Navigator.pop(
                     context,
-                    editedAlarm.copyWith(isActive: true),
+                    EditorResult(
+                      value: editedAlarm.copyWith(isActive: true),
+                      action: EditorActionEnum.add,
+                    ),
                   );
                 }
               } else {

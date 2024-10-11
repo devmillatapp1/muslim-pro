@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:muslim/src/core/extensions/extension_platform.dart';
 
+
 //TODO App Version | Change every release
-const String kAppVersion = "2.9.0";
+const String kAppVersion = "2.9.01";
 
 String kAppStorageKey =
-    PlatformExtension.isDesktop ? "elmoslem_storage" : "GetStorage";
+PlatformExtension.isDesktop ? "hisn_elmoslem_storage" : "GetStorage";
 
 const double kFontChangeBy = .2;
 const double kFontDefault = 2.6;

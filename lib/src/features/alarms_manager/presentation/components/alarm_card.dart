@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:muslim/generated/l10n.dart';
+import 'package:muslim/src/core/models/editor_result.dart';
 import 'package:muslim/src/core/shared/widgets/round_tag.dart';
 import 'package:muslim/src/features/alarms_manager/data/models/alarm.dart';
 import 'package:muslim/src/features/alarms_manager/data/models/alarm_repeat_type.dart';
@@ -24,17 +25,24 @@ class AlarmCard extends StatelessWidget {
           SlidableAction(
             backgroundColor: Colors.green.withOpacity(.5),
             onPressed: (val) async {
-              final alarm = await showAlarmEditorDialog(
+              final EditorResult<DbAlarm>? result = await showAlarmEditorDialog(
                 context: context,
                 dbAlarm: dbAlarm,
                 isToEdit: true,
               );
 
-              if (alarm is! DbAlarm) return;
-              if (!alarm.hasAlarmInside) return;
+              if (result == null) return;
               if (!context.mounted) return;
 
-              context.read<AlarmsBloc>().add(AlarmsEditEvent(alarm));
+              switch (result.action) {
+                case EditorActionEnum.edit:
+                  context.read<AlarmsBloc>().add(AlarmsEditEvent(result.value));
+                case EditorActionEnum.delete:
+                  context
+                      .read<AlarmsBloc>()
+                      .add(AlarmsRemoveEvent(result.value));
+                default:
+              }
             },
             icon: Icons.edit,
             label: S.of(context).edit,
@@ -107,10 +115,10 @@ class AlarmCardBody extends StatelessWidget {
           value: dbAlarm.isActive,
           onChanged: (value) {
             context.read<AlarmsBloc>().add(
-                  AlarmsEditEvent(
-                    dbAlarm.copyWith(isActive: value),
-                  ),
-                );
+              AlarmsEditEvent(
+                dbAlarm.copyWith(isActive: value),
+              ),
+            );
           },
         ),
       ],

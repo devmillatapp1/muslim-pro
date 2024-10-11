@@ -11,11 +11,9 @@ import 'package:muslim/src/features/zikr_viewer/presentation/screens/zikr_viewer
 class AwesomeNotificationManager {
   Future<void> init() async {
     try {
-      await AwesomeNotifications()
-          .isNotificationAllowed()
-          .then((isAllowed) async {
+      await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
         if (!isAllowed) {
-          await AwesomeNotifications().requestPermissionToSendNotifications();
+          AwesomeNotifications().requestPermissionToSendNotifications();
         }
       });
 
@@ -45,6 +43,8 @@ class AwesomeNotificationManager {
         ],
         debug: true,
       );
+
+      await appOpenNotification();
     } catch (e) {
       hisnPrint(e);
     }
@@ -57,15 +57,15 @@ class AwesomeNotificationManager {
 
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(
-    ReceivedAction receivedAction,
-  ) async {
+      ReceivedAction receivedAction,
+      ) async {
     final List<String?> payloadsList = receivedAction.payload!.values.toList();
     final String? payload = payloadsList[0];
     hisnPrint("actionStream: $payload");
 
     try {
       final int currentBadgeCount =
-          await AwesomeNotifications().getGlobalBadgeCounter();
+      await AwesomeNotifications().getGlobalBadgeCounter();
       if (currentBadgeCount > 5) {
         await AwesomeNotifications().resetGlobalBadge();
       } else {
@@ -126,7 +126,7 @@ class AwesomeNotificationManager {
   /// Show Notification
   Future<void> appOpenNotification() async {
     final scheduleNotificationDateTime =
-        DateTime.now().add(const Duration(days: 3));
+    DateTime.now().add(const Duration(days: 3));
     // int id = createUniqueId();c
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
@@ -177,23 +177,23 @@ class AwesomeNotificationManager {
       ),
       actionButtons: needToOpen
           ? [
-              NotificationActionButton(
-                key: 'Dismiss',
-                label: S.current.dismiss,
-                actionType: ActionType.DisabledAction,
-              ),
-              NotificationActionButton(
-                key: 'Start',
-                label: S.current.start,
-              ),
-            ]
+        NotificationActionButton(
+          key: 'Dismiss',
+          label: S.current.dismiss,
+          actionType: ActionType.DisabledAction,
+        ),
+        NotificationActionButton(
+          key: 'Start',
+          label: S.current.start,
+        ),
+      ]
           : [
-              NotificationActionButton(
-                key: 'Dismiss',
-                label: S.current.dismiss,
-                actionType: ActionType.DisabledAction,
-              ),
-            ],
+        NotificationActionButton(
+          key: 'Dismiss',
+          label: S.current.dismiss,
+          actionType: ActionType.DisabledAction,
+        ),
+      ],
     );
   }
 
@@ -226,23 +226,23 @@ class AwesomeNotificationManager {
       ),
       actionButtons: needToOpen
           ? [
-              NotificationActionButton(
-                key: 'Dismiss',
-                label: S.current.dismiss,
-                actionType: ActionType.DisabledAction,
-              ),
-              NotificationActionButton(
-                key: 'Start',
-                label: S.current.start,
-              ),
-            ]
+        NotificationActionButton(
+          key: 'Dismiss',
+          label: S.current.dismiss,
+          actionType: ActionType.DisabledAction,
+        ),
+        NotificationActionButton(
+          key: 'Start',
+          label: S.current.start,
+        ),
+      ]
           : [
-              NotificationActionButton(
-                key: 'Dismiss',
-                label: S.current.dismiss,
-                actionType: ActionType.DisabledAction,
-              ),
-            ],
+        NotificationActionButton(
+          key: 'Dismiss',
+          label: S.current.dismiss,
+          actionType: ActionType.DisabledAction,
+        ),
+      ],
     );
   }
 
@@ -274,20 +274,15 @@ class AwesomeNotificationManager {
       );
     }
   }
-
-  void dispose() {
-    // AwesomeNotifications().actionSink.close();
-    // AwesomeNotifications().createdSink.close();
-  }
 }
 
 class Time {
   final int hour;
   final int minute;
   Time(
-    this.hour, [
-    this.minute = 0,
-  ]);
+      this.hour, [
+        this.minute = 0,
+      ]);
 }
 
 class NotifyChannel {

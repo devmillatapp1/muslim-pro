@@ -19,7 +19,7 @@ class S {
 
   static S get current {
     assert(_current != null,
-    'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
+        'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
     return _current!;
   }
 
@@ -42,7 +42,7 @@ class S {
   static S of(BuildContext context) {
     final instance = S.maybeOf(context);
     assert(instance != null,
-    'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?');
+        'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?');
     return instance!;
   }
 
@@ -95,6 +95,16 @@ class S {
     return Intl.message(
       'Add',
       name: 'add',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Smart Team`
+  String get smartsite {
+    return Intl.message(
+      'Smart Team',
+      name: 'smartsite',
       desc: '',
       args: [],
     );
@@ -190,10 +200,10 @@ class S {
     );
   }
 
-  /// `Elmoslem Pro`
+  /// `Elmoslem Pro App`
   String get appTitle {
     return Intl.message(
-      'Elmoslem Pro',
+      'Elmoslem Pro App',
       name: 'appTitle',
       desc: '',
       args: [],
@@ -583,7 +593,7 @@ class S {
   /// `A digital copy of Elmoslem Pro was used from the Aloka Network.`
   String get digitalCopyOfElmoslemPro {
     return Intl.message(
-      'A digital copy of Hisn ELmoslem was used from the Aloka Network.',
+      'A digital copy of Elmoslem Pro was used from the Aloka Network.',
       name: 'digitalCopyOfElmoslemPro',
       desc: '',
       args: [],
@@ -615,16 +625,6 @@ class S {
     return Intl.message(
       'Done',
       name: 'done',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Don't ask again`
-  String get donnotAskAgain {
-    return Intl.message(
-      'Don\'t ask again',
-      name: 'donnotAskAgain',
       desc: '',
       args: [],
     );
@@ -965,15 +965,6 @@ class S {
     return Intl.message(
       'Github source code',
       name: 'github',
-      desc: '',
-      args: [],
-    );
-  }
-
-  String get smartsite {
-    return Intl.message(
-      'Smart Team for Digital Systems Development',
-      name: 'smartsite',
       desc: '',
       args: [],
     );
@@ -2068,6 +2059,7 @@ class S {
       args: [],
     );
   }
+
 
   /// `Tally Editor`
   String get tallyEditor {

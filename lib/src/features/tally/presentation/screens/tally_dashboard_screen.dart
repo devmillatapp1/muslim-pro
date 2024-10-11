@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/di/dependency_injection.dart';
+import 'package:muslim/src/core/models/editor_result.dart';
 import 'package:muslim/src/core/shared/widgets/loading.dart';
 import 'package:muslim/src/features/tally/data/models/tally.dart';
 import 'package:muslim/src/features/tally/data/models/tally_iteration_mode.dart';
-import 'package:muslim/src/features/tally/presentation/components/dialogs/tally_dialog.dart';
+import 'package:muslim/src/features/tally/presentation/components/dialogs/tally_editor.dart';
 import 'package:muslim/src/features/tally/presentation/controller/bloc/tally_bloc.dart';
 import 'package:muslim/src/features/tally/presentation/screens/tally_counter_view.dart';
 import 'package:muslim/src/features/tally/presentation/screens/tally_list_view.dart';
@@ -36,19 +37,28 @@ class TallyDashboardScreen extends StatelessWidget {
                       tooltip: S.of(context).edit,
                       onPressed: () async {
                         final DbTally dbTally = state.activeCounter!;
-                        final DbTally? result = await showDialog(
+                        final EditorResult<DbTally>? result =
+                        await showTallyEditorDialog(
                           context: context,
-                          builder: (BuildContext context) {
-                            return TallyDialog(
-                              dbTally: dbTally,
-                            );
-                          },
+                          dbTally: dbTally,
                         );
 
                         if (result == null || !context.mounted) return;
-                        context
-                            .read<TallyBloc>()
-                            .add(TallyEditCounterEvent(counter: result));
+                        switch (result.action) {
+                          case EditorActionEnum.edit:
+                            context.read<TallyBloc>().add(
+                              TallyEditCounterEvent(
+                                counter: result.value,
+                              ),
+                            );
+                          case EditorActionEnum.delete:
+                            context.read<TallyBloc>().add(
+                              TallyDeleteCounterEvent(
+                                counter: result.value,
+                              ),
+                            );
+                          default:
+                        }
                       },
                       icon: const Icon(Icons.edit),
                     ),

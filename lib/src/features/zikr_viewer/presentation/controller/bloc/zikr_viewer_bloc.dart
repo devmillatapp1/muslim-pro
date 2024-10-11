@@ -34,13 +34,13 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   final ZikrViewerRepo zikrViewerRepo;
   final AzkarFiltersRepo azkarFiltersRepo;
   ZikrViewerBloc(
-    this.effectsManager,
-    this.homeBloc,
-    this.hisnDBHelper,
-    this.volumeButtonManager,
-    this.zikrViewerRepo,
-    this.azkarFiltersRepo,
-  ) : super(ZikrViewerLoadingState()) {
+      this.effectsManager,
+      this.homeBloc,
+      this.hisnDBHelper,
+      this.volumeButtonManager,
+      this.zikrViewerRepo,
+      this.azkarFiltersRepo,
+      ) : super(ZikrViewerLoadingState()) {
     _initHandlers();
   }
 
@@ -82,9 +82,9 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _start(
-    ZikrViewerStartEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerStartEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     if (sl<AppSettingsRepo>().enableWakeLock) {
       WakelockPlus.enable();
     }
@@ -103,7 +103,7 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
     _initZikrPageMode(event.zikrViewerMode);
 
     final restoredSession =
-        await zikrViewerRepo.getLastSession(event.titleIndex);
+    await zikrViewerRepo.getLastSession(event.titleIndex);
     emit(
       ZikrViewerLoadedState(
         title: title,
@@ -112,19 +112,22 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
         zikrViewerMode: event.zikrViewerMode,
         activeZikrIndex: 0,
         restoredSession: restoredSession ?? {},
+        askToRestoreSession: zikrViewerRepo.allowZikrSessionRestoration &&
+            restoredSession != null &&
+            restoredSession.isNotEmpty,
       ),
     );
   }
 
   FutureOr<void> _restoreSession(
-    ZikrViewerRestoreSessionEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerRestoreSessionEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
 
     if (!event.restore) {
-      emit(state.copyWith(restoredSession: {}));
+      emit(state.copyWith(askToRestoreSession: false));
       return;
     }
 
@@ -147,13 +150,13 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
       pageController.jumpToPage(pageToJump);
     }
 
-    emit(state.copyWith(azkarToView: azkarToView, restoredSession: {}));
+    emit(state.copyWith(azkarToView: azkarToView, askToRestoreSession: false));
   }
 
   FutureOr<void> _saveSession(
-    ZikrViewerSaveSessionEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerSaveSessionEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
 
@@ -164,9 +167,9 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _resetSession(
-    ZikrViewerResetSessionEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerResetSessionEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
 
@@ -174,9 +177,9 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _pageChange(
-    ZikrViewerPageChangeEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerPageChangeEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
 
@@ -188,16 +191,16 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _decreaaseActiveZikr(
-    ZikrViewerDecreaseZikrEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerDecreaseZikrEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
     final activeZikr =
-        _getZikrToDealWith(state: state, eventContent: event.content);
+    _getZikrToDealWith(state: state, eventContent: event.content);
     if (activeZikr == null) return;
     final activeZikrIndex =
-        state.azkarToView.indexWhere((x) => x.id == activeZikr.id);
+    state.azkarToView.indexWhere((x) => x.id == activeZikr.id);
 
     final int count = activeZikr.count;
 
@@ -234,13 +237,13 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _resetActiveZikr(
-    ZikrViewerResetZikrEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerResetZikrEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
     final activeZikr =
-        _getZikrToDealWith(state: state, eventContent: event.content);
+    _getZikrToDealWith(state: state, eventContent: event.content);
     if (activeZikr == null) return;
 
     final originalZikr =
@@ -258,13 +261,13 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _copyActiveZikr(
-    ZikrViewerCopyZikrEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerCopyZikrEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
     final activeZikr =
-        _getZikrToDealWith(state: state, eventContent: event.content);
+    _getZikrToDealWith(state: state, eventContent: event.content);
     if (activeZikr == null) return;
 
     showDialog(
@@ -278,13 +281,13 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _shareActiveZikr(
-    ZikrViewerShareZikrEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerShareZikrEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
     final activeZikr =
-        _getZikrToDealWith(state: state, eventContent: event.content);
+    _getZikrToDealWith(state: state, eventContent: event.content);
     if (activeZikr == null) return;
 
     showDialog(
@@ -298,13 +301,13 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _toggleBookmark(
-    ZikrViewerToggleZikrBookmarkEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerToggleZikrBookmarkEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
     final activeZikr =
-        _getZikrToDealWith(state: state, eventContent: event.content);
+    _getZikrToDealWith(state: state, eventContent: event.content);
     if (activeZikr == null) return;
 
     if (event.bookmark) {
@@ -342,13 +345,13 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _report(
-    ZikrViewerReportZikrEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerReportZikrEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
     final activeZikr =
-        _getZikrToDealWith(state: state, eventContent: event.content);
+    _getZikrToDealWith(state: state, eventContent: event.content);
     if (activeZikr == null) return;
 
     final text = await activeZikr.getPlainText();
@@ -360,9 +363,9 @@ class ZikrViewerBloc extends Bloc<ZikrViewerEvent, ZikrViewerState> {
   }
 
   FutureOr<void> _volumeKeyPressed(
-    ZikrViewerVolumeKeyPressedEvent event,
-    Emitter<ZikrViewerState> emit,
-  ) async {
+      ZikrViewerVolumeKeyPressedEvent event,
+      Emitter<ZikrViewerState> emit,
+      ) async {
     final state = this.state;
     if (state is! ZikrViewerLoadedState) return;
     final activeZikr = _getZikrToDealWith(state: state);

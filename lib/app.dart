@@ -47,7 +47,6 @@ class AppState extends State<App> {
     await sl<FakeHadithDBHelper>().close();
     await sl<AlarmDatabaseHelper>().close();
     await sl<TallyDatabaseHelper>().close();
-    sl<AwesomeNotificationManager>().dispose();
     super.dispose();
   }
 

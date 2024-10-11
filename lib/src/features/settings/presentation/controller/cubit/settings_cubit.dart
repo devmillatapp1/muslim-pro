@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:muslim/src/core/values/constant.dart';
@@ -7,6 +6,7 @@ import 'package:muslim/src/features/effects_manager/data/repository/effects_mana
 import 'package:muslim/src/features/effects_manager/presentation/controller/effects_manager.dart';
 import 'package:muslim/src/features/settings/data/repository/app_settings_repo.dart';
 import 'package:muslim/src/features/settings/data/repository/zikr_text_repo.dart';
+import 'package:muslim/src/features/zikr_viewer/data/repository/zikr_viewer_repo.dart';
 
 part 'settings_state.dart';
 
@@ -15,30 +15,34 @@ class SettingsCubit extends Cubit<SettingsState> {
   final EffectsManagerRepo effectsManagerRepo;
   final AppSettingsRepo appSettingsRepo;
   final ZikrTextRepo zikrTextRepo;
+  final ZikrViewerRepo zikrViewerRepo;
   SettingsCubit(
-    this.effectsManagerRepo,
-    this.appSettingsRepo,
-    this.effectsManager,
-    this.zikrTextRepo,
-  ) : super(
-          SettingsState(
-            zikrEffects: ZikrEffects(
-              soundEffectVolume: effectsManagerRepo.soundEffectVolume,
-              soundEveryPraise: effectsManagerRepo.isPraiseSoundAllowed,
-              soundEveryZikr: effectsManagerRepo.isZikrSoundAllowed,
-              soundEveryTitle: effectsManagerRepo.isTitleSoundAllowed,
-              vibrateEveryPraise: effectsManagerRepo.isPraiseVibrationAllowed,
-              vibrateEveryZikr: effectsManagerRepo.isZikrVibrationAllowed,
-              vibrateEveryTitle: effectsManagerRepo.isTitleVibrationAllowed,
-            ),
-            enableWakeLock: appSettingsRepo.enableWakeLock,
-            isCardReadMode: appSettingsRepo.isCardReadMode,
-            useHindiDigits: appSettingsRepo.useHindiDigits,
-            fontSize: zikrTextRepo.fontSize,
-            showDiacritics: zikrTextRepo.showDiacritics,
-            praiseWithVolumeKeys: appSettingsRepo.praiseWithVolumeKeys,
-          ),
-        );
+      this.effectsManagerRepo,
+      this.appSettingsRepo,
+      this.effectsManager,
+      this.zikrTextRepo,
+      this.zikrViewerRepo,
+      ) : super(
+    SettingsState(
+      zikrEffects: ZikrEffects(
+        soundEffectVolume: effectsManagerRepo.soundEffectVolume,
+        soundEveryPraise: effectsManagerRepo.isPraiseSoundAllowed,
+        soundEveryZikr: effectsManagerRepo.isZikrSoundAllowed,
+        soundEveryTitle: effectsManagerRepo.isTitleSoundAllowed,
+        vibrateEveryPraise: effectsManagerRepo.isPraiseVibrationAllowed,
+        vibrateEveryZikr: effectsManagerRepo.isZikrVibrationAllowed,
+        vibrateEveryTitle: effectsManagerRepo.isTitleVibrationAllowed,
+      ),
+      enableWakeLock: appSettingsRepo.enableWakeLock,
+      isCardReadMode: appSettingsRepo.isCardReadMode,
+      useHindiDigits: appSettingsRepo.useHindiDigits,
+      fontSize: zikrTextRepo.fontSize,
+      showDiacritics: zikrTextRepo.showDiacritics,
+      praiseWithVolumeKeys: appSettingsRepo.praiseWithVolumeKeys,
+      allowZikrSessionRestoration:
+      zikrViewerRepo.allowZikrSessionRestoration,
+    ),
+  );
 
   ///MARK: General Settings
   Future toggleIsCardReadMode({required bool activate}) async {
@@ -54,6 +58,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future toggleWakeLock({required bool use}) async {
     await appSettingsRepo.changeEnableWakeLock(use: use);
     emit(state.copyWith(enableWakeLock: use));
+  }
+
+  Future toggleAllowZikrSessionRestoration({required bool allow}) async {
+    await zikrViewerRepo.toggleAllowZikrSessionRestoration(allow);
+    emit(state.copyWith(allowZikrSessionRestoration: allow));
   }
 
   ///MARK: praiseWithVolumeKeys

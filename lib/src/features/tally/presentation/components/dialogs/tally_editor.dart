@@ -1,23 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/functions/show_toast.dart';
+import 'package:muslim/src/core/models/editor_result.dart';
 import 'package:muslim/src/core/shared/custom_inputs/number_field.dart';
 import 'package:muslim/src/core/shared/custom_inputs/text_field.dart';
 import 'package:muslim/src/features/tally/data/models/tally.dart';
 
-class TallyDialog extends StatefulWidget {
+Future<EditorResult<DbTally>?> showTallyEditorDialog({
+  required BuildContext context,
+  DbTally? dbTally,
+}) async {
+  return showDialog<EditorResult<DbTally>?>(
+    context: context,
+    builder: (BuildContext context) {
+      return _TallyEditor(
+        dbTally: dbTally,
+      );
+    },
+  );
+}
+
+class _TallyEditor extends StatefulWidget {
   final DbTally? dbTally;
 
-  const TallyDialog({
-    super.key,
+  const _TallyEditor({
     this.dbTally,
   });
 
   @override
-  State<TallyDialog> createState() => _TallyDialogState();
+  State<_TallyEditor> createState() => _TallyEditorState();
 }
 
-class _TallyDialogState extends State<TallyDialog> {
+class _TallyEditorState extends State<_TallyEditor> {
   late DbTally dbTally;
   TextEditingController titleController = TextEditingController();
   TextEditingController resetCounterController = TextEditingController();
@@ -43,15 +57,7 @@ class _TallyDialogState extends State<TallyDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        () {
-          if (widget.dbTally != null) {
-            return S.of(context).editCounter;
-          } else {
-            return S.of(context).addNewCounter;
-          }
-        }(),
-      ),
+      title: Text(S.of(context).tallyEditor),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -74,9 +80,24 @@ class _TallyDialogState extends State<TallyDialog> {
         ],
       ),
       actions: [
+        if (widget.dbTally != null)
+          TextButton(
+            child: Text(
+              S.of(context).delete,
+              style: TextStyle(
+                color: Theme.of(context).buttonTheme.colorScheme?.error,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(
+                context,
+                EditorResult(action: EditorActionEnum.delete, value: dbTally),
+              );
+            },
+          ),
         FilledButton(
           child: Text(
-            S.of(context).done,
+            widget.dbTally == null ? S.of(context).add : S.of(context).edit,
             textAlign: TextAlign.center,
           ),
           onPressed: () {
@@ -92,7 +113,20 @@ class _TallyDialogState extends State<TallyDialog> {
 
             dbTally = dbTally.copyWith(title: title, countReset: resetCounter);
 
-            Navigator.pop<DbTally>(context, dbTally);
+            if (dbTally == widget.dbTally) {
+              Navigator.pop(context);
+              return;
+            }
+
+            Navigator.pop(
+              context,
+              EditorResult(
+                action: widget.dbTally == null
+                    ? EditorActionEnum.add
+                    : EditorActionEnum.edit,
+                value: dbTally,
+              ),
+            );
           },
         ),
       ],

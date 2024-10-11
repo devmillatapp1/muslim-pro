@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/extensions/extension_object.dart';
+import 'package:muslim/src/core/models/editor_result.dart';
 import 'package:muslim/src/core/shared/dialogs/yes_no_dialog.dart';
 import 'package:muslim/src/features/tally/data/models/tally.dart';
-import 'package:muslim/src/features/tally/presentation/components/dialogs/tally_dialog.dart';
+import 'package:muslim/src/features/tally/presentation/components/dialogs/tally_editor.dart';
 import 'package:muslim/src/features/tally/presentation/controller/bloc/tally_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -35,11 +36,11 @@ class TallyCard extends StatelessWidget {
                   : null,
               onTap: () {
                 context.read<TallyBloc>().add(
-                      TallyToggleCounterActivationEvent(
-                        counter: dbTally,
-                        activate: !isActivated,
-                      ),
-                    );
+                  TallyToggleCounterActivationEvent(
+                    counter: dbTally,
+                    activate: !isActivated,
+                  ),
+                );
               },
               leading: Icon(
                 isActivated ? Icons.done_all_outlined : null,
@@ -61,19 +62,28 @@ class TallyCard extends StatelessWidget {
                       IconButton(
                         tooltip: S.of(context).edit,
                         onPressed: () async {
-                          final DbTally? result = await showDialog(
+                          final EditorResult<DbTally>? result =
+                          await showTallyEditorDialog(
                             context: context,
-                            builder: (BuildContext context) {
-                              return TallyDialog(
-                                dbTally: dbTally,
-                              );
-                            },
+                            dbTally: dbTally,
                           );
 
                           if (result == null || !context.mounted) return;
-                          context
-                              .read<TallyBloc>()
-                              .add(TallyEditCounterEvent(counter: result));
+                          switch (result.action) {
+                            case EditorActionEnum.edit:
+                              context.read<TallyBloc>().add(
+                                TallyEditCounterEvent(
+                                  counter: result.value,
+                                ),
+                              );
+                            case EditorActionEnum.delete:
+                              context.read<TallyBloc>().add(
+                                TallyDeleteCounterEvent(
+                                  counter: result.value,
+                                ),
+                              );
+                            default:
+                          }
                         },
                         icon: const Icon(Icons.edit),
                       ),
@@ -94,10 +104,10 @@ class TallyCard extends StatelessWidget {
                           }
 
                           context.read<TallyBloc>().add(
-                                TallyDeleteCounterEvent(
-                                  counter: dbTally,
-                                ),
-                              );
+                            TallyDeleteCounterEvent(
+                              counter: dbTally,
+                            ),
+                          );
                         },
                         icon: const Icon(Icons.delete),
                       ),

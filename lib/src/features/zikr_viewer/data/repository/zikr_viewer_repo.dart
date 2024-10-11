@@ -18,7 +18,7 @@ class ZikrViewerRepo {
 
     /// convert string to map
     final Map<String, dynamic> decoded =
-        json.decode(data) as Map<String, dynamic>;
+    json.decode(data) as Map<String, dynamic>;
 
     /// convert map to map {int:int}
     return decoded.map((key, value) => MapEntry(int.parse(key), value as int));
@@ -28,7 +28,7 @@ class ZikrViewerRepo {
   Future saveSession(int titleId, Map<int, int> session) async {
     /// convert map key to string
     final Map<String, int> stringKeyedMap =
-        session.map((key, value) => MapEntry(key.toString(), value));
+    session.map((key, value) => MapEntry(key.toString(), value));
 
     /// convert map to string
     final String encoded = json.encode(stringKeyedMap);
@@ -52,4 +52,12 @@ class ZikrViewerRepo {
   bool get shareSource => box.read<bool?>(_shareSourceKey) ?? true;
   Future toggleShareSource(bool value) async =>
       box.write(_shareSourceKey, value);
+
+  ///MARK: Enable Disable the ability to restore session
+  static const String _allowZikrSessionRestorationKey =
+      "allowZikrSessionRestoration";
+  bool get allowZikrSessionRestoration =>
+      box.read<bool?>(_allowZikrSessionRestorationKey) ?? true;
+  Future toggleAllowZikrSessionRestoration(bool value) async =>
+      box.write(_allowZikrSessionRestorationKey, value);
 }

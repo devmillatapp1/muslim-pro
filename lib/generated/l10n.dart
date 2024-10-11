@@ -2060,7 +2060,6 @@ class S {
     );
   }
 
-
   /// `Tally Editor`
   String get tallyEditor {
     return Intl.message(

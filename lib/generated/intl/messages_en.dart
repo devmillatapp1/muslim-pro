@@ -38,9 +38,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "addNewCounter":
             MessageLookupByLibrary.simpleMessage("Add new counter"),
         "addReminder": MessageLookupByLibrary.simpleMessage("Add reminder"),
+        "alarmEditor": MessageLookupByLibrary.simpleMessage("Alarm Editor"),
         "allow": MessageLookupByLibrary.simpleMessage("Allow"),
         "allowNotifications": MessageLookupByLibrary.simpleMessage(
             "Allow app to send notifications?"),
+        "allowZikrRestoreSession": MessageLookupByLibrary.simpleMessage(
+            "Allow Zikr session restoration"),
+        "allowZikrRestoreSessionDesc": MessageLookupByLibrary.simpleMessage(
+            "Popup menu to resume uncompleted Zikr session "),
         "appLanguage": MessageLookupByLibrary.simpleMessage("App Language"),
         "appTitle": MessageLookupByLibrary.simpleMessage("Elmoslem Pro App"),
         "areYouSure": MessageLookupByLibrary.simpleMessage("Are you sure?"),
@@ -312,6 +317,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "suraAlMulk": MessageLookupByLibrary.simpleMessage("Surah Al-Mulk"),
         "suraAsSajdah": MessageLookupByLibrary.simpleMessage("Surah As-Sajdah"),
         "tally": MessageLookupByLibrary.simpleMessage("Tally"),
+        "tallyEditor": MessageLookupByLibrary.simpleMessage("Tally Editor"),
         "text": MessageLookupByLibrary.simpleMessage("Text"),
         "textColor": MessageLookupByLibrary.simpleMessage("Text color"),
         "themeAppColor": MessageLookupByLibrary.simpleMessage("App Color"),

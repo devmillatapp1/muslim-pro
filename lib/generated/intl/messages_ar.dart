@@ -38,9 +38,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "addNewCounter":
             MessageLookupByLibrary.simpleMessage("إضافة عداد جديد"),
         "addReminder": MessageLookupByLibrary.simpleMessage("إضافة تنبيه"),
+        "alarmEditor": MessageLookupByLibrary.simpleMessage("محرر التنبيهات"),
         "allow": MessageLookupByLibrary.simpleMessage("السماح"),
         "allowNotifications": MessageLookupByLibrary.simpleMessage(
             "هل تريد السماح بتشغيل الإشعارات؟"),
+        "allowZikrRestoreSession":
+            MessageLookupByLibrary.simpleMessage("السماح بإستعادة جلسات الذكر"),
+        "allowZikrRestoreSessionDesc": MessageLookupByLibrary.simpleMessage(
+            "عبارة عن نافذة منبثقة لتحديد استكمال جلسات الذكر غير المكتملة"),
         "appLanguage": MessageLookupByLibrary.simpleMessage("لغة التطبيق"),
         "appTitle": MessageLookupByLibrary.simpleMessage("المسلم برو"),
         "areYouSure": MessageLookupByLibrary.simpleMessage("متأكد من ذلك؟"),
@@ -294,6 +299,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "suraAlMulk": MessageLookupByLibrary.simpleMessage("سورة الملك"),
         "suraAsSajdah": MessageLookupByLibrary.simpleMessage("سورة السجدة"),
         "tally": MessageLookupByLibrary.simpleMessage("السبحة"),
+        "tallyEditor": MessageLookupByLibrary.simpleMessage("محرر السبحة"),
         "text": MessageLookupByLibrary.simpleMessage("النص"),
         "textColor": MessageLookupByLibrary.simpleMessage("لون النص"),
         "themeAppColor": MessageLookupByLibrary.simpleMessage("لون التطبيق"),

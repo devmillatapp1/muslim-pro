@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim/src/core/di/dependency_injection.dart';
-import 'package:muslim/src/features/home/presentation/screens/home_screen.dart';
 import 'package:muslim/src/features/home/presentation/components/widgets/modern_bottom_nav_bar.dart';
-import 'package:muslim/src/features/quran/presentation/screens/quran_main_screen.dart';
-import 'package:muslim/src/features/quran/presentation/controller/cubit/quran_reader_cubit.dart';
+import 'package:muslim/src/features/home/presentation/screens/home_screen.dart';
 import 'package:muslim/src/features/quran/presentation/controller/cubit/quran_audio_cubit.dart';
+import 'package:muslim/src/features/quran/presentation/controller/cubit/quran_reader_cubit.dart';
+import 'package:muslim/src/features/quran/presentation/screens/quran_main_screen.dart';
 
 class MainAppScreen extends StatefulWidget {
   const MainAppScreen({super.key});

@@ -79,6 +79,8 @@ dependencies:
 
   # Quran specific dependencies
   cached_network_image: ^3.4.1
+  integration_test:
+    sdk: flutter
 
 dev_dependencies:
   flutter_lints: ^6.0.0

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/di/dependency_injection.dart';
-import 'package:muslim/src/core/extensions/extension.dart';
 import 'package:muslim/src/core/extensions/extension_object.dart';
 import 'package:muslim/src/core/shared/widgets/loading.dart';
 import 'package:muslim/src/core/values/constant.dart';

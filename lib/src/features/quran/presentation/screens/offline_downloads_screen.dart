@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/di/dependency_injection.dart';
 import 'package:muslim/src/core/shared/widgets/loading.dart';
 import 'package:muslim/src/features/quran/data/models/surah_model.dart';
@@ -390,14 +389,14 @@ class _OfflineDownloadsScreenState extends State<OfflineDownloadsScreen>
                               .withValues(alpha: 0.7),
                         ),
                       ),
-                      Row(
+                      const Row(
                         children: [
                           Icon(
                             Icons.offline_pin_rounded,
                             size: 16,
                             color: Colors.green,
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Text(
                             'متاح بدون إنترنت',
                             style: TextStyle(
@@ -485,12 +484,12 @@ class _OfflineDownloadsScreenState extends State<OfflineDownloadsScreen>
     );
   }
 
-  void _downloadSurah(Surah surah) async {
+  Future<void> _downloadSurah(Surah surah) async {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('تحميل ${surah.name}...')));
   }
 
-  void _deleteSurah(Surah surah) async {
+  Future<void> _deleteSurah(Surah surah) async {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('حذف ${surah.name}...')));
   }

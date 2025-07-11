@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/di/dependency_injection.dart';
 import 'package:muslim/src/core/shared/widgets/loading.dart';
 import 'package:muslim/src/features/quran/data/models/ayah_model.dart';
@@ -525,7 +524,7 @@ class _QuranReaderScreenState extends State<QuranReaderScreen> {
     );
   }
 
-  void _toggleBookmark() async {
+  Future<void> _toggleBookmark() async {
     if (_currentSurah != null) {
       await _repository.saveBookmark(_currentSurahNumber, 1);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -592,7 +591,7 @@ class _QuranReaderScreenState extends State<QuranReaderScreen> {
     );
   }
 
-  void _toggleAyahFavorite(Ayah ayah) async {
+  Future<void> _toggleAyahFavorite(Ayah ayah) async {
     try {
       await _repository.saveFavoriteAyah(ayah);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -609,7 +608,7 @@ class _QuranReaderScreenState extends State<QuranReaderScreen> {
     }
   }
 
-  void _addBookmarkAtAyah(Ayah ayah) async {
+  Future<void> _addBookmarkAtAyah(Ayah ayah) async {
     try {
       await _repository.saveBookmark(_currentSurahNumber, ayah.numberInSurah);
       ScaffoldMessenger.of(context).showSnackBar(

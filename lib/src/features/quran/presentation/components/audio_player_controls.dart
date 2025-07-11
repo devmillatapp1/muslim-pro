@@ -16,16 +16,16 @@ class AudioPlayerControls extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // Previous Surah
-              IconButton(
+              const IconButton(
                 onPressed: null,
-                icon: const Icon(Icons.skip_previous),
+                icon: Icon(Icons.skip_previous),
                 iconSize: 32,
               ),
 
               // Seek Backward
-              IconButton(
+              const IconButton(
                 onPressed: null,
-                icon: const Icon(Icons.replay_10),
+                icon: Icon(Icons.replay_10),
                 iconSize: 28,
               ),
 
@@ -50,16 +50,16 @@ class AudioPlayerControls extends StatelessWidget {
               ),
 
               // Seek Forward
-              IconButton(
+              const IconButton(
                 onPressed: null,
-                icon: const Icon(Icons.forward_10),
+                icon: Icon(Icons.forward_10),
                 iconSize: 28,
               ),
 
               // Next Surah
-              IconButton(
+              const IconButton(
                 onPressed: null,
-                icon: const Icon(Icons.skip_next),
+                icon: Icon(Icons.skip_next),
                 iconSize: 32,
               ),
             ],
@@ -68,27 +68,27 @@ class AudioPlayerControls extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Secondary Controls
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // Speed Control
               IconButton(
                 onPressed: null,
-                icon: const Icon(Icons.speed),
+                icon: Icon(Icons.speed),
                 tooltip: 'سرعة التشغيل',
               ),
 
               // Volume Control
               IconButton(
                 onPressed: null,
-                icon: const Icon(Icons.volume_up),
+                icon: Icon(Icons.volume_up),
                 tooltip: 'مستوى الصوت',
               ),
 
               // Stop
               IconButton(
                 onPressed: null,
-                icon: const Icon(Icons.stop),
+                icon: Icon(Icons.stop),
                 tooltip: 'إيقاف',
               ),
             ],

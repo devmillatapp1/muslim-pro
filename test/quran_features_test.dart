@@ -93,7 +93,8 @@ void main() {
       expect(find.text('الله'), findsAtLeastOneWidget);
     });
 
-    testWidgets('اختبار المفضلة والعلامات المرجعية', (WidgetTester tester) async {
+    testWidgets('اختبار المفضلة والعلامات المرجعية',
+        (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -113,7 +114,8 @@ void main() {
       expect(find.text('المفضلة'), findsOneWidget);
     });
 
-    testWidgets('اختبار التحميلات للعمل بدون إنترنت', (WidgetTester tester) async {
+    testWidgets('اختبار التحميلات للعمل بدون إنترنت',
+        (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -147,7 +149,8 @@ void main() {
 
       // التحقق من عرض محتوى السورة
       expect(find.text('الفاتحة'), findsAtLeastOneWidget);
-      expect(find.text('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
+      expect(
+          find.text('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
 
       // اختبار أزرار التنقل
       final nextButton = find.byIcon(Icons.skip_next_rounded);
@@ -238,12 +241,12 @@ void main() {
   group('اختبار الأداء والاستقرار', () {
     testWidgets('اختبار سرعة التحميل', (WidgetTester tester) async {
       final stopwatch = Stopwatch()..start();
-      
+
       app.main();
       await tester.pumpAndSettle();
-      
+
       stopwatch.stop();
-      
+
       // التحقق من أن التطبيق يحمل في أقل من 5 ثوان
       expect(stopwatch.elapsedMilliseconds, lessThan(5000));
     });
@@ -256,10 +259,10 @@ void main() {
       for (int i = 0; i < 5; i++) {
         await tester.tap(find.byIcon(Icons.menu_book_rounded));
         await tester.pumpAndSettle();
-        
+
         await tester.tap(find.text('الفاتحة'));
         await tester.pumpAndSettle();
-        
+
         await tester.pageBack();
         await tester.pumpAndSettle();
       }
@@ -269,3 +272,5 @@ void main() {
     });
   });
 }
+
+mixin findsAtLeastOneWidget {}

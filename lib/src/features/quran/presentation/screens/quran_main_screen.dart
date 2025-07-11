@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim/generated/l10n.dart';
-import 'package:muslim/src/core/di/dependency_injection.dart';
 import 'package:muslim/src/core/shared/widgets/loading.dart';
 import 'package:muslim/src/features/quran/presentation/components/last_read_card.dart';
+import 'package:muslim/src/features/quran/presentation/components/quick_access_section.dart';
 import 'package:muslim/src/features/quran/presentation/components/quran_app_bar.dart';
 import 'package:muslim/src/features/quran/presentation/components/quran_search_bar.dart';
-import 'package:muslim/src/features/quran/presentation/components/quick_access_section.dart';
 import 'package:muslim/src/features/quran/presentation/components/surahs_list.dart';
 import 'package:muslim/src/features/quran/presentation/controller/cubit/quran_audio_cubit.dart';
 import 'package:muslim/src/features/quran/presentation/controller/cubit/quran_reader_cubit.dart';

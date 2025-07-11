@@ -18,10 +18,10 @@ import 'package:muslim/src/features/home/presentation/controller/bloc/home_bloc.
 import 'package:muslim/src/features/home/presentation/screens/main_app_screen.dart';
 import 'package:muslim/src/features/home_search/presentation/controller/cubit/search_cubit.dart';
 import 'package:muslim/src/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:muslim/src/features/quran/data/models/surah_name_enum.dart';
+import 'package:muslim/src/features/quran/presentation/screens/quran_audio_player_screen.dart';
 import 'package:muslim/src/features/quran/presentation/screens/quran_main_screen.dart';
 import 'package:muslim/src/features/quran/presentation/screens/quran_read_screen.dart';
-import 'package:muslim/src/features/quran/presentation/screens/quran_audio_player_screen.dart';
-import 'package:muslim/src/features/quran/data/models/surah_name_enum.dart';
 import 'package:muslim/src/features/settings/data/repository/app_settings_repo.dart';
 import 'package:muslim/src/features/settings/presentation/controller/cubit/settings_cubit.dart';
 import 'package:muslim/src/features/tally/data/repository/tally_database_helper.dart';

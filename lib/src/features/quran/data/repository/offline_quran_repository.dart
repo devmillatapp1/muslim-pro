@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muslim/src/features/quran/data/models/ayah_model.dart';
 import 'package:muslim/src/features/quran/data/models/reciter_model.dart';
 import 'package:muslim/src/features/quran/data/models/surah_model.dart';
 import 'package:muslim/src/features/quran/data/repository/quran_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OfflineQuranRepository implements QuranRepository {
   final SharedPreferences _prefs;

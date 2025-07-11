@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim/generated/l10n.dart';
 import 'package:muslim/src/core/di/dependency_injection.dart';
+import 'package:muslim/src/features/quran/data/repository/quran_repository.dart';
 import 'package:muslim/src/features/quran/presentation/components/audio_player_controls.dart';
 import 'package:muslim/src/features/quran/presentation/components/reciter_selector.dart';
 import 'package:muslim/src/features/quran/presentation/controller/cubit/quran_audio_cubit.dart';
 import 'package:muslim/src/features/quran/presentation/controller/cubit/quran_reader_cubit.dart';
 import 'package:muslim/src/features/quran/presentation/screens/surah_selector_screen.dart';
-import 'package:muslim/src/features/quran/data/repository/quran_repository.dart';
 
 class QuranAudioPlayerScreen extends StatelessWidget {
   const QuranAudioPlayerScreen({super.key});

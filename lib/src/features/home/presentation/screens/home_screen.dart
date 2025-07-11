@@ -11,8 +11,6 @@ import 'package:muslim/src/features/home/presentation/components/side_menu/side_
 import 'package:muslim/src/features/home/presentation/controller/bloc/home_bloc.dart';
 import 'package:muslim/src/features/home_search/presentation/controller/cubit/search_cubit.dart';
 import 'package:muslim/src/features/home_search/presentation/screens/home_search_screen.dart';
-import 'package:muslim/src/features/themes/data/models/app_colors.dart';
-import 'package:muslim/src/features/home/presentation/components/widgets/modern_bottom_nav_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({

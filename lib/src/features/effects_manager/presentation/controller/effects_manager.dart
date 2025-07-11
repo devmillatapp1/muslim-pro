@@ -47,7 +47,7 @@ class EffectsManager {
   Future<void> playPraiseVibratation() async {
     await Vibration.hasCustomVibrationsSupport().then(
       (value) => {
-        if (value!)
+        if (value)
           {Vibration.vibrate(duration: 100)}
         else
           {HapticFeedback.lightImpact()},
@@ -58,7 +58,7 @@ class EffectsManager {
   Future<void> playZikrVibratation() async {
     await Vibration.hasCustomVibrationsSupport().then(
       (value) => {
-        if (value!)
+        if (value)
           {Vibration.vibrate(duration: 300)}
         else
           {HapticFeedback.mediumImpact()},
@@ -69,7 +69,7 @@ class EffectsManager {
   Future<void> playTitleVibratation() async {
     await Vibration.hasCustomVibrationsSupport().then(
       (value) => {
-        if (value!) {Vibration.vibrate()} else {HapticFeedback.heavyImpact()},
+        if (value) {Vibration.vibrate()} else {HapticFeedback.heavyImpact()},
       },
     );
   }
